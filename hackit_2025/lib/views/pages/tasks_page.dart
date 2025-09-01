@@ -37,6 +37,7 @@ class _TasksPageState extends State<TasksPage> {
               onEditingComplete: () {
                 setState(() {
                   myBox.put(testController.text, testController.text);
+                  testController.clear();
                 });
               },
             ),
@@ -44,22 +45,22 @@ class _TasksPageState extends State<TasksPage> {
               onPressed: () {
                 writeData();
               },
-              child: Text("Write data"),
               color: Colors.blue,
+              child: Text("Write data"),
             ),
             MaterialButton(
               onPressed: () {
                 readData();
               },
-              child: Text("Read data"),
               color: Colors.blue,
+              child: Text("Read data"),
             ),
             MaterialButton(
               onPressed: () {
                 deleteData();
               },
-              child: Text("Delete data"),
               color: Colors.blue,
+              child: Text("Delete data"),
             ),
             Expanded(
               child: ListView.builder(
@@ -75,7 +76,7 @@ class _TasksPageState extends State<TasksPage> {
                       },
                       icon: Icon(Icons.remove),
                     ),
-                    title: Text("$name"),
+                    title: Text(name),
                   );
                 },
               ),

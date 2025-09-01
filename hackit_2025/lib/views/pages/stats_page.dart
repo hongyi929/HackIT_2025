@@ -10,6 +10,9 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(child: Text('Stats'));
+    return Container(
+      width: double.infinity,
+      child: Column(children: [Text('Stats')]),
+    );
   }
 }

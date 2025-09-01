@@ -26,12 +26,21 @@ class _WidgetTreeState extends State<WidgetTree> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: ValueListenableBuilder(
-        valueListenable: selectedPageNotifier,
-        builder: (context, selectedPage, child) {
-          return pages.elementAt(selectedPage);
-        },
+      appBar: AppBar(backgroundColor: Color(0xFFC0E6FF)),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFC0E6FF), Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment(0,0.6),
+          ),
+        ),
+        child: ValueListenableBuilder(
+          valueListenable: selectedPageNotifier,
+          builder: (context, selectedPage, child) {
+            return pages.elementAt(selectedPage);
+          },
+        ),
       ),
       bottomNavigationBar: NavbarWidget(),
     );
