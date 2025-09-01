@@ -27,5 +27,5 @@ class KTextStyle {
     fontWeight: FontWeight.w600,
   );
 
-  static final TextStyle descriptionText = GoogleFonts.inter(fontSize: 16.0);
+  static final TextStyle descriptionText = GoogleFonts.inter(fontSize: 12.0);
 }
