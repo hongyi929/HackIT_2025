@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/views/widgets/task_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class TasksPage extends StatefulWidget {
@@ -28,61 +30,37 @@ class _TasksPageState extends State<TasksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: testController,
-              onEditingComplete: () {
-                setState(() {
-                  myBox.put(testController.text, testController.text);
-                  testController.clear();
-                });
-              },
+            Text("Tasks", style: KTextStyle.header1Text),
+            Row(
+              spacing: 10,
+              children: [
+                FilledButton(onPressed: () {
+                  
+                }, child: Text("All")),
+                FilledButton(onPressed: () {
+                  
+                }, child: Icon(Icons.star)),
+                FilledButton(onPressed: () {
+                  
+                }, child: Text("Category 1"))
+              ]
             ),
-            MaterialButton(
-              onPressed: () {
-                writeData();
-              },
-              color: Colors.blue,
-              child: Text("Write data"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                readData();
-              },
-              color: Colors.blue,
-              child: Text("Read data"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                deleteData();
-              },
-              color: Colors.blue,
-              child: Text("Delete data"),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: myBox.length,
-                itemBuilder: (context, index) {
-                  String name = myBox.getAt(index);
-                  return ListTile(
-                    leading: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          myBox.deleteAt(index);
-                        });
-                      },
-                      icon: Icon(Icons.remove),
-                    ),
-                    title: Text(name),
-                  );
-                },
-              ),
-            ),
-          ],
+            SizedBox(height: 30),
+            TaskWidget()
+          ]
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: Icon(Icons.add, color: Colors.white),
+        label: Text("Add task", style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFF217AFF),
       ),
     );
   }
