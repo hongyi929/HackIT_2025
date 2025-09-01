@@ -3,7 +3,7 @@ import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/home_page.dart';
 import 'package:hackit_2025/views/pages/progress_page.dart';
 import 'package:hackit_2025/views/pages/stats_page.dart';
-import 'package:hackit_2025/views/pages/tasks_page.dart';
+import 'package:hackit_2025/views/pages/Tasks/tasks_page.dart';
 import 'package:hackit_2025/views/pages/usage_page.dart';
 import 'package:hackit_2025/views/widgets/navbar_widget.dart';
 
