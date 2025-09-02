@@ -43,7 +43,6 @@ class _TasksPageState extends State<TasksPage> {
                     itemBuilder: (context, index) {
                       var key = myBox.keyAt(index);
                       final taskItem = myBox.get(key);
-                      print(taskItem);
                       if (taskAmount > 0) {
                         return Column(
                           children: [
