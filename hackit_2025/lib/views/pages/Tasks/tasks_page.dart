@@ -45,7 +45,6 @@ class _TasksPageState extends State<TasksPage> {
                       var key = myBox.keyAt(index);
                       final taskItem = myBox.get(key);
                       if (taskAmount > 0) {
-                        print(taskItem);
                         return Column(
                           children: [
                             TaskWidget(title: taskItem[0], description: taskItem[1], date: taskItem[2]),

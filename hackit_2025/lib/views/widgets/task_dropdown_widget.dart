@@ -1,5 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/views/pages/add_category_page.dart';
+import 'package:hackit_2025/views/widgets/category_dropdown_item.dart';
 
 class TaskDropdownWidget extends StatefulWidget {
   const TaskDropdownWidget({super.key});
@@ -30,31 +32,20 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
                   value: "bl",
                   child: SizedBox(
                     width: double.infinity,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 20,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(child: Text("The category item name")),
-                      ],
-                    ),
+                    child: CategoryDropdownItem(
+                      categoryName: "Programming 1",
+                      categoryColor: Color(0xFF123456),
+                    )
                   ),
                 ),
-
                 DropdownMenuItem(
                   value: "gr",
                   child: SizedBox(width: double.infinity, child: Text("Green")),
                 ),
                 DropdownMenuItem(
-                  value: "gr",
+                  value: "popo",
                   child: GestureDetector(
                     child: SizedBox(
-                      width: double.infinity,
                       child: Row(
                         children: [
                           Icon(Icons.add),
@@ -64,7 +55,9 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
                       ),
                     ),
                     onTap: () {
-                      
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return AddCategoryPage();
+                      },));
                     },
                   ),
                 ),

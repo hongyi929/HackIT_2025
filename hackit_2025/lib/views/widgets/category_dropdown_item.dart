@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 
 class CategoryDropdownItem extends StatelessWidget {
-  const CategoryDropdownItem({super.key});
+  const CategoryDropdownItem({super.key, required this.categoryName, required this.categoryColor});
 
+  final String categoryName;
+  final Color categoryColor;
+  
   @override
   Widget build(BuildContext context) {
-    return DropdownMenuItem(
-      value: "gr",
-      child: SizedBox(
-        width: double.infinity,
-        child: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.blue,
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(child: Text("The category item name")),
-          ],
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: categoryColor),
         ),
-      ),
+        SizedBox(width: 10),
+        Expanded(child: Text(categoryName)),
+      ],
     );
   }
 }
