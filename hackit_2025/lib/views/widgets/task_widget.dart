@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 
 class TaskWidget extends StatelessWidget {
-  const TaskWidget({super.key, required this.title, required this.description});
+  const TaskWidget({super.key, required this.title, required this.description, required this.date});
 
   final String title;
   final String description;
+  final String date;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(20),
-        child: Container(
+        child: SizedBox(
           height: 100,
           width: double.infinity,
           // Row to separate 2 items: column of description items, and checkbox.
@@ -26,11 +27,11 @@ class TaskWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("$title", style: KTextStyle.header3Text),
+                    Text(title, style: KTextStyle.header3Text),
                     // softWrap argument to allow text to go into new line if overflows first line
                     // maxLines to determine how many lines before ellipsis is triggered
                     Text(
-                      "$description",
+                      description,
                       softWrap: true,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -39,7 +40,7 @@ class TaskWidget extends StatelessWidget {
                       children: [
                         Icon(Icons.calendar_month),
                         SizedBox(width: 10),
-                        Text("Sep 21 2025"),
+                        Text(date),
                       ],
                     ),
                   ],

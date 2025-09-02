@@ -38,15 +38,17 @@ class _TasksPageState extends State<TasksPage> {
               child: ValueListenableBuilder(
                 valueListenable: taskAmountNotifier,
                 builder: (context, taskAmount, child) {
+                  if (taskAmount > 0) {
                   return ListView.builder(
                     itemCount: taskAmount,
                     itemBuilder: (context, index) {
                       var key = myBox.keyAt(index);
                       final taskItem = myBox.get(key);
                       if (taskAmount > 0) {
+                        print(taskItem);
                         return Column(
                           children: [
-                            TaskWidget(title: taskItem[0], description: taskItem[1]),
+                            TaskWidget(title: taskItem[0], description: taskItem[1], date: taskItem[2]),
                             SizedBox(height: 10),
                           ],
                         );
@@ -55,6 +57,9 @@ class _TasksPageState extends State<TasksPage> {
                       }
                     },
                   );
+                  } else {
+                    return Text("Looks like you need to create a task!");
+                  }
                 },
               ),
             ),

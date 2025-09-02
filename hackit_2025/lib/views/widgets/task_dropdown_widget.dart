@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
-class TaskDropdownWidget extends StatelessWidget {
+class TaskDropdownWidget extends StatefulWidget {
   const TaskDropdownWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<TaskDropdownWidget> createState() => _TaskDropdownWidgetState();
+}
+    String? dropdownValue;
+
+class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
+  @override
+  Widget build(BuildContext context) {  
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -13,6 +19,7 @@ class TaskDropdownWidget extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: DropdownButton(
+            value: dropdownValue,
             hint: Text("Select your category, bucko."),
             isExpanded: true,
             items: [
@@ -34,14 +41,18 @@ class TaskDropdownWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                
               ),
+
               DropdownMenuItem(
                 value: "gr",
                 child: SizedBox(width: double.infinity, child: Text("Green")),
               ),
             ],
-            onChanged: (value) {},
+            onChanged: (value) {
+              setState(() {
+                dropdownValue = value;
+              });
+            },
           ),
         ),
       ],

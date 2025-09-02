@@ -7,6 +7,7 @@ class DateInputWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.controller,
+    requi
   });
 
   final String title;
@@ -14,49 +15,44 @@ class DateInputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController inputController = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title),
-        SizedBox(
-          height: 60,
-          child: Card.outlined(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style: KTextStyle.descriptionText,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        hintText: "Due Date",
-                        border: InputBorder.none,
-                        isCollapsed: true,
-                        prefixIcon: Icon(Icons.calendar_month),
-                      ),
-                      controller: inputController,
-                      onTap: () async {
-                        DateTime? datetime = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2025),
-                          lastDate: DateTime(2100),
-                        );
-                        if (datetime != null) {
-                          String formattedDate = DateFormat(
-                            "d MMM yyyy",
-                          ).format(datetime);
-                          inputController.text = formattedDate;
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
+        TextFormField(
+          style: KTextStyle.descriptionText,
+          textAlignVertical: TextAlignVertical.center,
+          validator: (value) => value!.isEmpty ? "Date needs to be filled" : null,
+          decoration: InputDecoration(
+            hintText: "Due Date",
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.5
+              )
             ),
+            isCollapsed: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 16.0),
+            prefixIcon: Icon(Icons.calendar_month),
           ),
+          controller: controller,
+          onTap: () async {
+            DateTime? datetime = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2025),
+              lastDate: DateTime(2100),
+            );
+            if (datetime != null) {
+              String formattedDate = DateFormat(
+                "d MMM yyyy",
+              ).format(datetime);
+              controller.text = formattedDate;
+            }
+          },
         ),
       ],
     );

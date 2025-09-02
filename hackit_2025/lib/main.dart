@@ -8,7 +8,11 @@ void main() async {
   await Hive.openBox("task_box");
   final myBox = Hive.box("task_box");
   taskAmountNotifier.value = myBox.length;
+  await myBox.clear();
+  print (myBox.length);
+  taskAmountNotifier.value = myBox.length;
   runApp(const MyApp());
+  ;
 }
 
 class MyApp extends StatelessWidget {
