@@ -9,7 +9,6 @@ class InputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController inputController = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,7 +30,7 @@ class InputWidget extends StatelessWidget {
                         border: InputBorder.none,
                         isCollapsed: true,
                       ),
-                      controller: inputController
+                      controller: controller,
                     ),
                   ),
                 ],

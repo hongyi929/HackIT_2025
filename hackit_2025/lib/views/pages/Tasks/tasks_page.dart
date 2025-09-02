@@ -41,10 +41,13 @@ class _TasksPageState extends State<TasksPage> {
                   return ListView.builder(
                     itemCount: taskAmount,
                     itemBuilder: (context, index) {
+                      var key = myBox.keyAt(index);
+                      final taskItem = myBox.get(key);
+                      print(taskItem);
                       if (taskAmount > 0) {
                         return Column(
                           children: [
-                            TaskWidget(title: "Heya", description: "Sup dawg"),
+                            TaskWidget(title: taskItem[0], description: taskItem[1]),
                             SizedBox(height: 10),
                           ],
                         );
@@ -53,7 +56,7 @@ class _TasksPageState extends State<TasksPage> {
                       }
                     },
                   );
-                }
+                },
               ),
             ),
           ],

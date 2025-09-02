@@ -3,6 +3,7 @@ import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/widgets/date_input_widget.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
+import 'package:hackit_2025/views/widgets/task_dropdown_widget.dart';
 import 'package:hive/hive.dart';
 
 class AddTasksPage extends StatelessWidget {
@@ -16,7 +17,10 @@ class AddTasksPage extends StatelessWidget {
     TextEditingController dateController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Color(0xFFF3FAFF),
+      appBar: AppBar(
+        backgroundColor: Color(0xFFF3FAFF),
+      ),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -74,6 +78,8 @@ class AddTasksPage extends StatelessWidget {
               title: "Enter due date",
               controller: dateController,
             ),
+            
+            TaskDropdownWidget(),
 
             FilledButton(
               onPressed: () {

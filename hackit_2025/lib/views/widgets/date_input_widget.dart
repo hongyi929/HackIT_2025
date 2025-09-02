@@ -3,7 +3,11 @@ import 'package:hackit_2025/data/constants.dart';
 import 'package:intl/intl.dart';
 
 class DateInputWidget extends StatelessWidget {
-  const DateInputWidget({super.key, required this.title, required this.controller});
+  const DateInputWidget({
+    super.key,
+    required this.title,
+    required this.controller,
+  });
 
   final String title;
   final TextEditingController controller;
@@ -30,16 +34,22 @@ class DateInputWidget extends StatelessWidget {
                         hintText: "Due Date",
                         border: InputBorder.none,
                         isCollapsed: true,
-                        prefixIcon: Icon(Icons.calendar_month)
+                        prefixIcon: Icon(Icons.calendar_month),
                       ),
                       controller: inputController,
-                      onTap:() async {
-                        DateTime? datetime = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2025), lastDate: DateTime(2100));
+                      onTap: () async {
+                        DateTime? datetime = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2025),
+                          lastDate: DateTime(2100),
+                        );
                         if (datetime != null) {
-                          String formattedDate = DateFormat("MMM d yyyy").format(datetime);
+                          String formattedDate = DateFormat(
+                            "d MMM yyyy",
+                          ).format(datetime);
                           inputController.text = formattedDate;
                         }
-
                       },
                     ),
                   ),

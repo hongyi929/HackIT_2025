@@ -42,7 +42,8 @@ class _WidgetTreeState extends State<WidgetTree> {
           },
         ),
       ),
-      bottomNavigationBar: NavbarWidget(),
+      bottomNavigationBar: NavbarWidget(
+      ),
     );
   }
 }
