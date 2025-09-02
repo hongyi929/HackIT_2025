@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/welcome_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox("task_box");
+  final myBox = Hive.box("task_box");
+  taskAmountNotifier.value = myBox.length;
   runApp(const MyApp());
 }
 

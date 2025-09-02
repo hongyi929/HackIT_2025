@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/Tasks/add_tasks_page.dart';
 import 'package:hackit_2025/views/widgets/task_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -34,20 +35,25 @@ class _TasksPageState extends State<TasksPage> {
             ),
             SizedBox(height: 30),
             Expanded(
-              child: ListView.builder(
-                itemCount: myBox.length,
-                itemBuilder: (context, index) {
-                  if (myBox.length > 0) {
-                    return Column(
-                      children: [
-                        TaskWidget(title: "Heya", description: "Sup dawg"),
-                        SizedBox(height: 10),
-                      ],
-                    );
-                  } else {
-                    return Text("Looks like you need to create a task!");
-                  }
-                },
+              child: ValueListenableBuilder(
+                valueListenable: taskAmountNotifier,
+                builder: (context, taskAmount, child) {
+                  return ListView.builder(
+                    itemCount: taskAmount,
+                    itemBuilder: (context, index) {
+                      if (taskAmount > 0) {
+                        return Column(
+                          children: [
+                            TaskWidget(title: "Heya", description: "Sup dawg"),
+                            SizedBox(height: 10),
+                          ],
+                        );
+                      } else {
+                        return Text("Looks like you need to create a task!");
+                      }
+                    },
+                  );
+                }
               ),
             ),
           ],
