@@ -24,7 +24,8 @@ class _TasksPageState extends State<TasksPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Tasks", style: KTextStyle.header1Text),
+            Text("Tasks", style: KTextStyle.titleText),
+            SizedBox(height: 10.0),
             Row(
               spacing: 10,
               children: [
@@ -39,23 +40,27 @@ class _TasksPageState extends State<TasksPage> {
                 valueListenable: taskAmountNotifier,
                 builder: (context, taskAmount, child) {
                   if (taskAmount > 0) {
-                  return ListView.builder(
-                    itemCount: taskAmount,
-                    itemBuilder: (context, index) {
-                      var key = myBox.keyAt(index);
-                      final taskItem = myBox.get(key);
-                      if (taskAmount > 0) {
-                        return Column(
-                          children: [
-                            TaskWidget(title: taskItem[0], description: taskItem[1], date: taskItem[2]),
-                            SizedBox(height: 10),
-                          ],
-                        );
-                      } else {
-                        return Text("Looks like you need to create a task!");
-                      }
-                    },
-                  );
+                    return ListView.builder(
+                      itemCount: taskAmount,
+                      itemBuilder: (context, index) {
+                        var key = myBox.keyAt(index);
+                        final taskItem = myBox.get(key);
+                        if (taskAmount > 0) {
+                          return Column(
+                            children: [
+                              TaskWidget(
+                                title: taskItem[0],
+                                description: taskItem[1],
+                                date: taskItem[2],
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          );
+                        } else {
+                          return Text("Looks like you need to create a task!");
+                        }
+                      },
+                    );
                   } else {
                     return Text("Looks like you need to create a task!");
                   }
