@@ -42,6 +42,9 @@ dependencies:
   hive: ^2.2.3
   intl: ^0.20.2
   dropdown_button2: ^2.3.9
+  app_usage: ^4.0.1 # reads app usage from Android
+  installed_apps: ^1.6.0 # app names + icons by package name
+  android_intent_plus: ^5.3.1 # open “Usage Access” settings screen
 
 dev_dependencies:
   flutter_test:
