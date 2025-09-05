@@ -2,20 +2,31 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/views/pages/add_category_page.dart';
 import 'package:hackit_2025/views/widgets/category_dropdown_item.dart';
+import 'package:hive/hive.dart';
 
 class TaskDropdownWidget extends StatefulWidget {
-  const TaskDropdownWidget({super.key});
+  const TaskDropdownWidget({super.key, required this.onChanged});
+  
+final Function(String?) onChanged;
 
   @override
   State<TaskDropdownWidget> createState() => _TaskDropdownWidgetState();
 }
+
 
 String? dropdownValue;
 
 class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
   @override
   Widget build(BuildContext context) {
+    final categoryBox = Hive.box("category_box");
+    // test values
+
+    categoryBox.put("Joedsmam", ["Joedsmam", 4293967395]);
+    categoryBox.put("Joedssmam", ["Joedssmam", 4223967095]);
+    var categoryList = categoryBox.values.toList();
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 20),
@@ -23,49 +34,50 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
         SizedBox(
           width: double.infinity,
           child: ButtonTheme(
-            child: DropdownButton2(
+            child: DropdownButtonFormField2(
+              validator: (value) => value != null ? null : "Category needs to be selected",
               value: dropdownValue,
               hint: Text("Select your category, bucko."),
               isExpanded: true,
               items: [
-                DropdownMenuItem(
-                  value: "bl",
-                  child: SizedBox(
-                    width: double.infinity,
+                ...categoryList.map((dropValue) {
+                  return DropdownMenuItem(
+                    value: dropValue[0].toString(),
                     child: CategoryDropdownItem(
-                      categoryName: "Programming 1",
-                      categoryColor: Color(0xFF123456),
-                    )
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: "gr",
-                  child: SizedBox(width: double.infinity, child: Text("Green")),
-                ),
-                DropdownMenuItem(
-                  value: "popo",
-                  child: GestureDetector(
-                    child: SizedBox(
-                      child: Row(
-                        children: [
-                          Icon(Icons.add),
-                          SizedBox(width: 10),
-                          Text("Add new category..."),
-                        ],
-                      ),
+                      categoryName: dropValue[0].toString(),
+                      categoryColor: Color(dropValue[1]),
                     ),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return AddCategoryPage();
-                      },));
-                    },
+                  );
+                }).toList(),
+                DropdownMenuItem(
+                  value: "addCategory",
+                  child: Row(
+                    children: [
+                      Icon(Icons.add),
+                      SizedBox(width: 10),
+                      Text("Add category"),
+                    ],
                   ),
                 ),
               ],
+
               onChanged: (value) {
-                setState(() {
-                  dropdownValue = value;
-                });
+                if (value == "addCategory") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return AddCategoryPage();
+                      },
+                    ),
+                  );
+                } else {
+                  setState(() {
+                    dropdownValue = value;
+                  });
+                  widget.onChanged(value);
+                  dropdownValue = null;
+                }
               },
             ),
           ),
