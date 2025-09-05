@@ -11,14 +11,19 @@ import 'package:hive/hive.dart';
 
 class AddTasksPage extends StatelessWidget {
   const AddTasksPage({super.key});
+  
+  
 
   @override
   Widget build(BuildContext context) {
     final myBox = Hive.box("task_box");
+    final categoryBox = Hive.box("category_box");
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     TextEditingController dateController = TextEditingController();
     final taskKey = GlobalKey<FormState>();
+    String? selectedCategory;
+    print(myBox.values.toList());
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
@@ -28,6 +33,7 @@ class AddTasksPage extends StatelessWidget {
         child: Form(
           key: taskKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Add Task", style: KTextStyle.header1Text),
@@ -45,7 +51,16 @@ class AddTasksPage extends StatelessWidget {
               ),
               // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
               // Acces category color and category name.
-              TaskDropdownWidget(),
+              ValueListenableBuilder(
+                valueListenable: categoryAmountNotifier,
+                builder: (context, categoryAmount, child) {
+                  return TaskDropdownWidget(
+                    onChanged: (value) {
+                      selectedCategory = value;
+                    },
+                  );
+                }
+              ),
               FilledButton(
                 onPressed: () {
                   if (taskKey.currentState!.validate()) {
@@ -53,8 +68,9 @@ class AddTasksPage extends StatelessWidget {
                       titleController.text,
                       descriptionController.text,
                       dateController.text,
+                      selectedCategory
                     ]);
-                    taskAmountNotifier.value++;
+                    taskAmountNotifier.value = myBox.length;
                     Navigator.pop(context);
                   }
                 },

@@ -7,10 +7,13 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox("task_box");
   final myBox = Hive.box("task_box");
+  await Hive.openBox("category_box");
+  final categoryBox = Hive.box("category_box");
+  myBox.clear();
+  categoryBox.clear();
+  await categoryBox.put("Joe", ["Joe mama", 4294967295]);
   taskAmountNotifier.value = myBox.length;
-  await myBox.clear();
-  print (myBox.length);
-  taskAmountNotifier.value = myBox.length;
+  categoryAmountNotifier.value = categoryBox.length;
   runApp(const MyApp());
   ;
 }

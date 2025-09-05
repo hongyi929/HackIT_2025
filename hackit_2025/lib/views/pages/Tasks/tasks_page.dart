@@ -14,8 +14,10 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage> {
   final myBox = Hive.box("task_box");
+  final categoryBox = Hive.box("category_box");
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -48,10 +50,14 @@ class _TasksPageState extends State<TasksPage> {
                         if (taskAmount > 0) {
                           return Column(
                             children: [
+                              // range error when title name is the same (solved)
+                              // When 2 items have same categoryname, a type null is not a subtype of type string error occurs
                               TaskWidget(
                                 title: taskItem[0],
                                 description: taskItem[1],
                                 date: taskItem[2],
+                                categoryName: taskItem[3],
+                                categoryColor: (categoryBox.get(taskItem[3]))[1],
                               ),
                               SizedBox(height: 10),
                             ],
