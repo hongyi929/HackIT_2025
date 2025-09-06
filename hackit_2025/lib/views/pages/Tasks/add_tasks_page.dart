@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
+import 'package:hackit_2025/services/firestore.dart';
 import 'package:hackit_2025/views/widgets/date_input_widget.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
 import 'package:hackit_2025/views/widgets/task_dropdown_widget.dart';
@@ -11,13 +12,13 @@ import 'package:hive/hive.dart';
 
 class AddTasksPage extends StatelessWidget {
   const AddTasksPage({super.key});
-  
-  
 
   @override
   Widget build(BuildContext context) {
     final myBox = Hive.box("task_box");
     final categoryBox = Hive.box("category_box");
+    final FirestoreTaskService firestoreService = FirestoreTaskService();
+
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     TextEditingController dateController = TextEditingController();
@@ -59,17 +60,17 @@ class AddTasksPage extends StatelessWidget {
                       selectedCategory = value;
                     },
                   );
-                }
+                },
               ),
               FilledButton(
                 onPressed: () {
                   if (taskKey.currentState!.validate()) {
-                    myBox.put(titleController.text, [
+                    firestoreService.addTask(
                       titleController.text,
                       descriptionController.text,
                       dateController.text,
-                      selectedCategory
-                    ]);
+                      selectedCategory!,
+                    );
                     taskAmountNotifier.value = myBox.length;
                     Navigator.pop(context);
                   }

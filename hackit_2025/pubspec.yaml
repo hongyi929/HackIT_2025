@@ -45,6 +45,8 @@ dependencies:
   app_usage: ^4.0.1 # reads app usage from Android
   installed_apps: ^1.6.0 # app names + icons by package name
   android_intent_plus: ^5.3.1 # open “Usage Access” settings screen
+  firebase_core: ^4.1.0
+  cloud_firestore: ^6.0.1
 
 dev_dependencies:
   flutter_test:

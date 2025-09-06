@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "668701996723",
+    "project_id": "hackit25-59f91",
+    "storage_bucket": "hackit25-59f91.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668701996723:android:3c9bdde67d992ec3c362c6",
+        "android_client_info": {
+          "package_name": "com.example.hackit_2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoY0leCUQvSoeNwxbPBvy4s_I0hlo0mLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
