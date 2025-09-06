@@ -52,7 +52,7 @@ class _StatsPageState extends State<StatsPage> {
         future: _future,
         builder: (context, snap) {
           final rows = snap.data ?? [];
-          final total = totalUsage(rows);
+          final total = totalUsage(rows); 
 
           return RefreshIndicator(
             onRefresh: _refresh,
