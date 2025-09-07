@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/views/pages/login_page.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
+import 'package:hackit_2025/widget_tree.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -47,6 +48,9 @@ class _SignupPageState extends State<SignupPage> {
                 onPressed: () async {
                   if (signupKey.currentState!.validate()) {
                     await createUserWithEmailAndPassword();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                      return WidgetTree();
+                    },));
                   }
                 },
                 child: Text("Sign Up"),

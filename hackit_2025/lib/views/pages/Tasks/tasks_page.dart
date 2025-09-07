@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
@@ -17,7 +19,6 @@ class _TasksPageState extends State<TasksPage> {
   final categoryBox = Hive.box("category_box");
 
   @override
-  
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -38,37 +39,46 @@ class _TasksPageState extends State<TasksPage> {
             ),
             SizedBox(height: 30),
             Expanded(
-              child: ValueListenableBuilder(
-                valueListenable: taskAmountNotifier,
-                builder: (context, taskAmount, child) {
-                  if (taskAmount > 0) {
-                    return ListView.builder(
-                      itemCount: taskAmount,
-                      itemBuilder: (context, index) {
-                        var key = myBox.keyAt(index);
-                        final taskItem = myBox.get(key);
-                        if (taskAmount > 0) {
-                          return Column(
-                            children: [
-                              // range error when title name is the same (solved)
-                              // When 2 items have same categoryname, a type null is not a subtype of type string error occurs
-                              TaskWidget(
-                                title: taskItem[0],
-                                description: taskItem[1],
-                                date: taskItem[2],
-                                categoryName: taskItem[3],
-                                categoryColor: (categoryBox.get(taskItem[3]))[1],
-                              ),
-                              SizedBox(height: 10),
-                            ],
-                          );
-                        } else {
-                          return Text("Looks like you need to create a task!");
-                        }
-                      },
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("tasks")
+                    .where(
+                      "user",
+                      isEqualTo: FirebaseAuth.instance.currentUser?.uid,
+                    )
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData) {    
+                    return const Center(
+                      child: Text("You have no active tasks"),
                     );
                   } else {
-                    return Text("Looks like you need to create a task!");
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> taskMap = snapshot
+                            .data!
+                            .docs[index]
+                            .data();
+                        return Column(
+                          children: [
+                            // range error when title name is the same (solved)
+                            // When 2 items have same categoryname, a type null is not a subtype of type string error occurs
+                            TaskWidget(
+                              title: taskMap['title'],
+                              description: taskMap['description'],
+                              date: taskMap['date'],
+                              categoryName: taskMap['category'],
+                              categoryColor: Colors.blue.toARGB32(),
+                            ),
+                            SizedBox(height: 10),
+                          ],
+                        );
+                      },
+                    );
                   }
                 },
               ),

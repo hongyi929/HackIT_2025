@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
+import 'package:hackit_2025/widget_tree.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -46,6 +47,9 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   if (signupKey.currentState!.validate()) {
                     await signInWithEmailAndPassword();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                      return WidgetTree(); 
+                    },));
                   }
                 },
                 child: Text("Log in"),

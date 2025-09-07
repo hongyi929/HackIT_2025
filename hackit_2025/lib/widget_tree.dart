@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/home_page.dart';
 import 'package:hackit_2025/views/pages/progress_page.dart';
+import 'package:hackit_2025/views/pages/settings_page.dart';
 import 'package:hackit_2025/views/pages/stats_page.dart';
 import 'package:hackit_2025/views/pages/Tasks/tasks_page.dart';
 import 'package:hackit_2025/views/pages/usage_page.dart';
@@ -30,13 +32,28 @@ class _WidgetTreeState extends State<WidgetTree> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Color(0xFFC0E6FF)),
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Icon(Icons.shield),
+        ),
+        title: Text("LockedIn", style: KTextStyle.header1Text),
+        actions: [Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: GestureDetector(child: Icon(Icons.person), onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return SettingsPage();
+            },));
+          },),
+        ),],
+        backgroundColor: Color(0xFFC0E6FF),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFC0E6FF), Colors.white],
             begin: Alignment.topCenter,
-            end: Alignment(0,0.6),
+            end: Alignment(0, 0.6),
           ),
         ),
         child: ValueListenableBuilder(
@@ -46,8 +63,7 @@ class _WidgetTreeState extends State<WidgetTree> {
           },
         ),
       ),
-      bottomNavigationBar: NavbarWidget(
-      ),
+      bottomNavigationBar: NavbarWidget(),
     );
   }
 }

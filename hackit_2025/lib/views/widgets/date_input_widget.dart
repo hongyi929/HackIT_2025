@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:intl/intl.dart';
@@ -7,11 +8,12 @@ class DateInputWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.controller,
-    requi
+    required this.onChanged,
   });
 
   final String title;
   final TextEditingController controller;
+  final Function(Timestamp) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,8 @@ class DateInputWidget extends StatelessWidget {
               lastDate: DateTime(2100),
             );
             if (datetime != null) {
+              print("$datetime is here");
+              onChanged(Timestamp.fromDate(datetime));
               String formattedDate = DateFormat(
                 "d MMM yyyy",
               ).format(datetime);

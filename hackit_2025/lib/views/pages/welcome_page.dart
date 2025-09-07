@@ -43,7 +43,7 @@ class WelcomePage extends StatelessWidget {
                       height: 50,
                       child: FilledButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) {
