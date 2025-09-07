@@ -15,6 +15,10 @@ List<Widget> pages = [
   StatsPage(),
 ];
 
+// Thinking if permission initialization should be here instead
+// So maybe IF permission not enabled, it will first async-await come up a popup to ask them to allow perm for A
+// After A has ran, B will run (via await async as well), same thing, popup and then lead them to enable the permission
+
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
 

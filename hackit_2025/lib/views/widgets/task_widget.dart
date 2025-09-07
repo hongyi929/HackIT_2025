@@ -32,7 +32,7 @@ class TaskWidget extends StatelessWidget {
       
       child: Padding(
         padding: EdgeInsets.all(20),
-        child: Container(
+        child: SizedBox(
           
           height: 100,
           width: double.infinity,

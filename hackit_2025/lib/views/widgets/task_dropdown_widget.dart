@@ -48,7 +48,7 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
                       categoryColor: Color(dropValue[1]),
                     ),
                   );
-                }).toList(),
+                }),
                 DropdownMenuItem(
                   value: "addCategory",
                   child: Row(

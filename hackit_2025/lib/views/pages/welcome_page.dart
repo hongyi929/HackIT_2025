@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/views/pages/signup_page.dart';
 import 'package:hackit_2025/widget_tree.dart';
 import 'package:lottie/lottie.dart';
 
@@ -46,7 +47,7 @@ class WelcomePage extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return WidgetTree();
+                                return SignupPage();
                               },
                             ),
                           );

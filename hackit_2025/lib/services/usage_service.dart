@@ -47,10 +47,11 @@ class AppUsageRow {
 Future<bool> ensureUsagePermission() async {
   if (!Platform.isAndroid) return false;
   try {
+    // Checks if usage access is enabled by performing a function with those permissions
     final now = DateTime.now();
     await AppUsage().getAppUsage(now.subtract(const Duration(minutes: 1)), now);
     return true;
-  } on PlatformException {
+  } on PlatformException { // On any exception, it means its not enabled, so user is redirected to allow permissions
     const intent = AndroidIntent(
       action: 'android.settings.USAGE_ACCESS_SETTINGS',
     );

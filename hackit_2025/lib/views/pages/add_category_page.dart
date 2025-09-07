@@ -71,7 +71,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                 SizedBox(height: 20),
                 Text("Color"),
                 SizedBox(height: 10),
-                Container(
+                SizedBox(
                   height: 300,
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
