@@ -16,6 +16,7 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   TimeRange _range = TimeRange.today;
   Future<List<AppUsageRow>>? _future;
+  DateTimeRange? _selectedRange;
 
   @override
   void initState() {
@@ -23,28 +24,89 @@ class _StatsPageState extends State<StatsPage> {
     _refresh(); // first load
   }
 
+  ({DateTime start, DateTime end}) _currentBounds() {
+    if (_selectedRange != null) {
+      final s = DateTime(
+        _selectedRange!.start.year,
+        _selectedRange!.start.month,
+        _selectedRange!.start.day,
+      );
+      final eIncl = DateTime(
+        _selectedRange!.end.year,
+        _selectedRange!.end.month,
+        _selectedRange!.end.day,
+      );
+      return (
+        start: s,
+        end: eIncl.add(const Duration(days: 1)),
+      ); // end is exclusive
+    }
+    return rangeBounds(_range);
+  }
+
   Future<void> _refresh() async {
     if (!Platform.isAndroid) return;
 
     await ensureUsagePermission();
 
-    // Start async work OUTSIDE setState
-    final fut = loadUsage(_range);
+    final b = _currentBounds();
+    final fut = loadUsageRange(b.start, b.end);
+
     if (!mounted) return;
-
-    // Assign fields synchronously, then call setState with an empty body
     _future = fut;
-    setState(() {}); // <-- sync only
+    setState(() {}); // synchronous setState
 
-    // Optional: keeps pull-to-refresh spinner accurate
-    await fut;
+    await fut; // optional (for pull-to-refresh spinner)
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final lastMonth = now.subtract(const Duration(days: 30));
+
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: now.subtract(const Duration(days: 365)),
+      lastDate: now,
+      initialDateRange: DateTimeRange(start: lastMonth, end: now),
+      helpText: 'Select a date range',
+    );
+    if (picked == null) return;
+
+    // normalize to midnight for both ends (inclusive for display)
+    final start = DateTime(
+      picked.start.year,
+      picked.start.month,
+      picked.start.day,
+    );
+    final endIncl = DateTime(picked.end.year, picked.end.month, picked.end.day);
+
+    _selectedRange = DateTimeRange(start: start, end: endIncl);
+
+    // load with exclusive end
+    final fut = loadUsageRange(start, endIncl.add(const Duration(days: 1)));
+    _future = fut;
+    if (mounted) setState(() {}); // triggers UI to swap the controls
   }
 
   void _setRange(TimeRange r) {
     _range = r;
-    _future = loadUsage(r);
-    if (mounted) setState(() {}); // <-- sync only
+    _selectedRange = null; // presets override custom date
+    final b = rangeBounds(r);
+    _future = loadUsageRange(b.start, b.end);
+    if (mounted) setState(() {});
   }
+
+  void _clearCustomRange() {
+    _selectedRange = null;
+    _refresh(); // fall back to Today/Week/Month
+  }
+
+  // nice short date label without extra packages
+  String _fmtDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  String _fmtRange(DateTimeRange r) =>
+      '${_fmtDate(r.start)} --> ${_fmtDate(r.end)}';
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +116,9 @@ class _StatsPageState extends State<StatsPage> {
         builder: (context, snap) {
           final rows = snap.data ?? [];
           final total = totalUsage(rows);
-          debugPrint(
-            'FB state=${snap.connectionState} rows=${rows.length}',
-          ); // DEBUGGING
+          // debugPrint(
+          //   'FB state=${snap.connectionState} rows=${rows.length}',
+          // ); // DEBUGGING
 
           return RefreshIndicator(
             onRefresh: _refresh,
@@ -71,28 +133,68 @@ class _StatsPageState extends State<StatsPage> {
                 ),
                 SizedBox(height: 10.0),
                 // Segmented filter
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     _Chip(
                       'Today',
-                      _range == TimeRange.today,
+                      _selectedRange == null && _range == TimeRange.today,
                       () => _setRange(TimeRange.today),
                     ),
-                    const SizedBox(width: 8),
                     _Chip(
                       'This week',
-                      _range == TimeRange.week,
+                      _selectedRange == null && _range == TimeRange.week,
                       () => _setRange(TimeRange.week),
                     ),
-                    const SizedBox(width: 8),
                     _Chip(
                       'This month',
-                      _range == TimeRange.month,
+                      _selectedRange == null && _range == TimeRange.month,
                       () => _setRange(TimeRange.month),
                     ),
+
+                    // When NO range is selected -> show an OUTLINED button
+                    if (_selectedRange == null)
+                      OutlinedButton.icon(
+                        onPressed: _pickDate,
+                        icon: const Icon(Icons.calendar_today, size: 18),
+                        label: const Text('Pick date'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+
+                    // When a range IS selected -> show a filled-looking chip with an ×
+                    if (_selectedRange != null)
+                      Builder(
+                        builder: (context) {
+                          final cs = Theme.of(context).colorScheme;
+                          return InputChip(
+                            selected: true,
+                            showCheckmark: false,
+                            avatar: const Icon(Icons.event, size: 16),
+                            label: Text(
+                              'Selected: ${_fmtRange(_selectedRange!)}',
+                            ),
+                            onDeleted: _clearCustomRange,
+                            deleteIcon: const Icon(Icons.close),
+                            // make it look “filled” like a selected chip
+                            selectedColor: cs
+                                .primaryContainer, // M3: ok (you’re ignoring deprecations)
+                            labelStyle: TextStyle(
+                              color: cs.onPrimaryContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        },
+                      ),
                   ],
                 ),
+
                 //const SizedBox(height: 24),
 
                 // show a pie chart of top apps for the current range
@@ -119,6 +221,7 @@ class _StatsPageState extends State<StatsPage> {
                         style: KTextStyle.header3Text.copyWith(
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.normal,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -149,7 +252,7 @@ class _StatsPageState extends State<StatsPage> {
                   )
                 else
                   // ⬇️ No .toList() needed; map() already returns an Iterable
-                  ...rows.map((r) => _AppRow(r)),
+                  ...rows.map((r) => _AppRow(row: r, total: total)),
               ],
             ),
           );
@@ -177,10 +280,18 @@ class _Chip extends StatelessWidget {
 
 class _AppRow extends StatelessWidget {
   final AppUsageRow row;
-  const _AppRow(this.row);
+  final Duration total;
+  const _AppRow({required this.row, required this.total});
 
   @override
   Widget build(BuildContext context) {
+    final totalSecs = total.inSeconds;
+    final target = totalSecs == 0 ? 0.0 : row.usage.inSeconds / totalSecs;
+
+    final cs = Theme.of(context).colorScheme;
+    final primary = cs.primary; // blue
+    final track = cs.surfaceVariant; // gray
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -189,9 +300,39 @@ class _AppRow extends StatelessWidget {
             ? Image.memory(row.iconBytes!, width: 32, height: 32)
             : const Icon(Icons.apps),
         title: Text(row.displayName),
+
+        // Progress bar + caption UNDER the title
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 6),
+
+            // ANIMATED BAR
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0, end: target.clamp(0.0, 1.0)),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) => ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: value,
+                  minHeight: 8,
+                  color: primary,
+                  backgroundColor: track.withOpacity(0.4),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 4),
+          ],
+        ),
+
         trailing: Text(
           formatDuration(row.usage),
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: KTextStyle.header2Text.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -234,7 +375,7 @@ class _UsagePie extends StatelessWidget {
 
     // DEBUGGING: see what we’re plotting
     // ignore: avoid_print
-    print('Pie data → total=${total.inMinutes}m, slices=${slices.length}');
+    // print('Pie data → total=${total.inMinutes}m, slices=${slices.length}');
 
     // High-contrast, safe palette (so it’s visible in any theme)
     const palette = <Color>[
