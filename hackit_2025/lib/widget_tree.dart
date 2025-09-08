@@ -39,12 +39,14 @@ class _WidgetTreeState extends State<WidgetTree> {
         ),
         title: Text("LockedIn", style: KTextStyle.header1Text),
         actions: [Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: GestureDetector(child: Icon(Icons.person), onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return SettingsPage();
-            },));
-          },),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            child: GestureDetector(child: Icon(Icons.person, size: 35), onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return SettingsPage();
+              },));
+            },),
+          ),
         ),],
         backgroundColor: Color(0xFFC0E6FF),
       ),

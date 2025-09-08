@@ -63,9 +63,12 @@ class TaskWidget extends StatelessWidget {
                       children: [
                         Icon(Icons.calendar_month),
                         SizedBox(width: 10),
-                        Text("${DateFormat("MMM d yyyy").format(date.toDate())}  |  $categoryName", 
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1),
+                        Expanded(
+                          child: Text("${DateFormat("MMM d yyyy").format(date.toDate())}  |  $categoryName", 
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1),
+                        ),
                       ],
                     ),
                   ],

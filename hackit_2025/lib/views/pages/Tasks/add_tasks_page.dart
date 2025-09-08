@@ -26,7 +26,7 @@ class AddTasksPage extends StatelessWidget {
         "title": titleController.text.trim(),
         "description": descriptionController.text.trim(),
         "date": dateTimestamp,
-        "category": categoryName,
+        "category": (FirebaseAuth.instance.currentUser!.uid + categoryName.toString()),
         "user": FirebaseAuth.instance.currentUser!.uid,
       });
       print(data.id);
@@ -37,8 +37,6 @@ class AddTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myBox = Hive.box("task_box");
-    final categoryBox = Hive.box("category_box");
     final FirestoreTaskService firestoreService = FirestoreTaskService();
 
     TextEditingController titleController = TextEditingController();
@@ -47,7 +45,6 @@ class AddTasksPage extends StatelessWidget {
     final taskKey = GlobalKey<FormState>();
     String? selectedCategory;
     Timestamp? dateTimestamp;
-    print(myBox.values.toList());
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
@@ -76,18 +73,15 @@ class AddTasksPage extends StatelessWidget {
                   dateTimestamp = value;
                 },
               ),
+
               // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
               // Acces category color and category name.
-              ValueListenableBuilder(
-                valueListenable: categoryAmountNotifier,
-                builder: (context, categoryAmount, child) {
-                  return TaskDropdownWidget(
-                    onChanged: (value) {
-                      selectedCategory = value;
-                    },
-                  );
+              TaskDropdownWidget(
+                onChanged: (value) {
+                  selectedCategory = value;
                 },
               ),
+
               FilledButton(
                 onPressed: () {
                   if (taskKey.currentState!.validate()) {
@@ -97,7 +91,6 @@ class AddTasksPage extends StatelessWidget {
                       dateTimestamp!,
                       selectedCategory,
                     );
-                    taskAmountNotifier.value = myBox.length;
                     Navigator.pop(context);
                   }
                 },
