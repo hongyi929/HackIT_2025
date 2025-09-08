@@ -13,7 +13,7 @@ class KTextStyle {
   );
 
   static final TextStyle header1Text = GoogleFonts.inter(
-    fontSize: 18.0,
+    fontSize: 20.0,
     fontWeight: FontWeight.w600,
   );
 
@@ -23,9 +23,11 @@ class KTextStyle {
   );
 
   static final TextStyle header3Text = GoogleFonts.inter(
-    fontSize: 18.0,
-    fontWeight: FontWeight.w600,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w500,
   );
 
-  static final TextStyle descriptionText = GoogleFonts.inter(fontSize: 12.0);
+  static final TextStyle descriptionText = GoogleFonts.inter(fontSize: 14.0);
+
+  static final TextStyle interText = GoogleFonts.inter();
 }
