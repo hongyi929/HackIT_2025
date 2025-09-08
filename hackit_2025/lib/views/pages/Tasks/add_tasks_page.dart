@@ -12,9 +12,14 @@ import 'package:hive/hive.dart';
 // TextFormField has to be redesigned to have card design and to remove paint icon
 // This is so that input validation looks neat and box highlight during selection is easy
 
-class AddTasksPage extends StatelessWidget {
+class AddTasksPage extends StatefulWidget {
   const AddTasksPage({super.key});
 
+  @override
+  State<AddTasksPage> createState() => _AddTasksPageState();
+}
+
+class _AddTasksPageState extends State<AddTasksPage> {
   Future<void> uploadTaskToDb(
     titleController,
     descriptionController,
@@ -48,7 +53,13 @@ class AddTasksPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
-      appBar: AppBar(backgroundColor: Color(0xFFF3FAFF)),
+      appBar: AppBar(backgroundColor: Color(0xFFF3FAFF), leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+         
+        Navigator.pop(context);
+        setState(() {
+          dropdownValue = null;
+        });
+      },)),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Form(
@@ -91,6 +102,9 @@ class AddTasksPage extends StatelessWidget {
                       dateTimestamp!,
                       selectedCategory,
                     );
+                    setState(() {
+                      dropdownValue = null;
+                    });
                     Navigator.pop(context);
                   }
                 },
