@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'hackit25-59f91.firebasestorage.app',
     measurementId: 'G-WTS4YGJ719',
   );
+
 }

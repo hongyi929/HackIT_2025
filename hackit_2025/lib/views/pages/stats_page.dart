@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import '/data/usage_service.dart'; // our logic helpers
+import '../../services/usage_service.dart'; // our logic helpers
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});

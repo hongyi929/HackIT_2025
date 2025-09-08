@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:hackit_2025/data/constants.dart';
@@ -29,11 +31,7 @@ List<int> colorList = [
   Color(0XFFD9D9D9).toARGB32(),
 ];
 
-
-
 class _AddCategoryPageState extends State<AddCategoryPage> {
-
-
   TextEditingController categoryController = TextEditingController();
   int selectedIndex = 0;
   Color colorPicker = Colors.grey;
@@ -41,17 +39,11 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   int createdColor = Color(0xFFEF2222).toARGB32();
   @override
   Widget build(BuildContext context) {
-    
-    final categoryBox = Hive.box("category_box");
-    
-    print(categoryBox.length);
-    if (categoryBox.isNotEmpty) {
-      print(categoryBox.get("ss"));
-    } else {
-      print("No categories yet");
-    }
+    final categoryCollection = FirebaseFirestore.instance.collection(
+      "category",
+    );
+
     return Scaffold(
-      
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -71,7 +63,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                 SizedBox(height: 20),
                 Text("Color"),
                 SizedBox(height: 10),
-                Container(
+                SizedBox(
                   height: 300,
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -143,11 +135,12 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                 FilledButton(
                   onPressed: () {
                     if (categoryKey.currentState!.validate()) {
-                        categoryBox.put(categoryController.text, [
-                        categoryController.text,
-                        createdColor
-                      ]);
-                      categoryAmountNotifier.value = categoryBox.length;
+                      categoryCollection.doc(FirebaseAuth.instance.currentUser!.uid + categoryController.text).set({
+                        "categoryName": categoryController.text,
+                        "categoryColor": createdColor,
+                        "user": FirebaseAuth.instance.currentUser!.uid,
+                      });
+
                       Navigator.pop(context);
                     }
                   },

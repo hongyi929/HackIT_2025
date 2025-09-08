@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
@@ -10,13 +12,36 @@ import 'package:hive/hive.dart';
 // TextFormField has to be redesigned to have card design and to remove paint icon
 // This is so that input validation looks neat and box highlight during selection is easy
 
-class AddTasksPage extends StatelessWidget {
+class AddTasksPage extends StatefulWidget {
   const AddTasksPage({super.key});
 
   @override
+  State<AddTasksPage> createState() => _AddTasksPageState();
+}
+
+class _AddTasksPageState extends State<AddTasksPage> {
+  Future<void> uploadTaskToDb(
+    titleController,
+    descriptionController,
+    dateTimestamp,
+    categoryName,
+  ) async {
+    try {
+      final data = await FirebaseFirestore.instance.collection("tasks").add({
+        "title": titleController.text.trim(),
+        "description": descriptionController.text.trim(),
+        "date": dateTimestamp,
+        "category": (FirebaseAuth.instance.currentUser!.uid + categoryName.toString()),
+        "user": FirebaseAuth.instance.currentUser!.uid,
+      });
+      print(data.id);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final myBox = Hive.box("task_box");
-    final categoryBox = Hive.box("category_box");
     final FirestoreTaskService firestoreService = FirestoreTaskService();
 
     TextEditingController titleController = TextEditingController();
@@ -24,11 +49,17 @@ class AddTasksPage extends StatelessWidget {
     TextEditingController dateController = TextEditingController();
     final taskKey = GlobalKey<FormState>();
     String? selectedCategory;
-    print(myBox.values.toList());
+    Timestamp? dateTimestamp;
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
-      appBar: AppBar(backgroundColor: Color(0xFFF3FAFF)),
+      appBar: AppBar(backgroundColor: Color(0xFFF3FAFF), leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+         
+        Navigator.pop(context);
+        setState(() {
+          dropdownValue = null;
+        });
+      },)),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Form(
@@ -49,29 +80,31 @@ class AddTasksPage extends StatelessWidget {
               DateInputWidget(
                 title: "Enter due date",
                 controller: dateController,
-              ),
-              // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
-              // Acces category color and category name.
-              ValueListenableBuilder(
-                valueListenable: categoryAmountNotifier,
-                builder: (context, categoryAmount, child) {
-                  return TaskDropdownWidget(
-                    onChanged: (value) {
-                      selectedCategory = value;
-                    },
-                  );
+                onChanged: (value) {
+                  dateTimestamp = value;
                 },
               ),
+
+              // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
+              // Acces category color and category name.
+              TaskDropdownWidget(
+                onChanged: (value) {
+                  selectedCategory = value;
+                },
+              ),
+
               FilledButton(
                 onPressed: () {
                   if (taskKey.currentState!.validate()) {
-                    firestoreService.addTask(
-                      titleController.text,
-                      descriptionController.text,
-                      dateController.text,
-                      selectedCategory!,
+                    uploadTaskToDb(
+                      titleController,
+                      descriptionController,
+                      dateTimestamp!,
+                      selectedCategory,
                     );
-                    taskAmountNotifier.value = myBox.length;
+                    setState(() {
+                      dropdownValue = null;
+                    });
                     Navigator.pop(context);
                   }
                 },

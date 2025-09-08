@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:intl/intl.dart';
 
 class TaskWidget extends StatelessWidget {
   const TaskWidget({
@@ -13,7 +15,7 @@ class TaskWidget extends StatelessWidget {
 
   final String title;
   final String description;
-  final String date;
+  final Timestamp date;
   final String categoryName;
   final int categoryColor;
 
@@ -32,7 +34,7 @@ class TaskWidget extends StatelessWidget {
       
       child: Padding(
         padding: EdgeInsets.all(20),
-        child: Container(
+        child: SizedBox(
           
           height: 100,
           width: double.infinity,
@@ -61,9 +63,12 @@ class TaskWidget extends StatelessWidget {
                       children: [
                         Icon(Icons.calendar_month),
                         SizedBox(width: 10),
-                        Text("$date  |  $categoryName", 
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1),
+                        Expanded(
+                          child: Text("${DateFormat("MMM d yyyy").format(date.toDate())}  |  $categoryName", 
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1),
+                        ),
                       ],
                     ),
                   ],
