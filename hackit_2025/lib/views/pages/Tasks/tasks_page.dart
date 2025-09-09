@@ -14,20 +14,21 @@ class TasksPage extends StatefulWidget {
   @override
   State<TasksPage> createState() => _TasksPageState();
 }
-
-String? selectedCategory;
-int? selectedIndex = 0;
-Stream<QuerySnapshot<Map<String, dynamic>>>? stream = stream = FirebaseFirestore
-    .instance
-    .collection("tasks")
-    .where("user", isEqualTo: uid)
-    .snapshots();
-
-String? uid = FirebaseAuth.instance.currentUser!.uid;
+  String? uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _TasksPageState extends State<TasksPage> {
+  String? selectedCategory;
+
+  int? selectedIndex = 0;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? stream = FirebaseFirestore
+      .instance
+      .collection("tasks")
+      .where("user", isEqualTo: uid)
+      .snapshots();
+      
   @override
   Widget build(BuildContext context) {
+    uid = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -101,13 +102,14 @@ class _TasksPageState extends State<TasksPage> {
                                           .where("user", isEqualTo: uid)
                                           .where(
                                             "category",
-                                            isEqualTo: (uid! + "star").toString(),
+                                            isEqualTo: (uid! + "star")
+                                                .toString(),
                                           )
                                           .snapshots();
                                     });
                                   },
                                 ),
-                                SizedBox(width: 10)
+                                SizedBox(width: 10),
                               ],
                             );
                           } else {
@@ -129,7 +131,9 @@ class _TasksPageState extends State<TasksPage> {
                                             "category",
                                             isEqualTo:
                                                 uid! +
-                                                categoryStream.data!.docs[index - 2]
+                                                categoryStream
+                                                    .data!
+                                                    .docs[index - 2]
                                                     .data()['categoryName'],
                                           )
                                           .snapshots();

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/firebase_options.dart';
 import 'package:hackit_2025/views/pages/welcome_page.dart';
 import 'package:hackit_2025/widget_tree.dart';
@@ -35,9 +36,12 @@ class MyApp extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.data != null) {
+            selectedPageNotifier.value = 0;
             return WidgetTree();
           } else {
+            selectedPageNotifier.value = 0;
             return WelcomePage();
+            
           }
         },
       ),

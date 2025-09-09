@@ -15,17 +15,19 @@ class SignupPage extends StatefulWidget {
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 final signupKey = GlobalKey<FormState>();
+String? errorMessage;
 
-Future<void> createUserWithEmailAndPassword() async {
+Future<dynamic> createUserWithEmailAndPassword() async {
   try {
     final userCredential = await FirebaseAuth.instance
-      .createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-  print(userCredential);
+        .createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+    return true;
   } on FirebaseAuthException catch (e) {
-    print(e.message);
+    errorMessage = e.toString();
+    return false;
   }
 }
 
@@ -47,10 +49,26 @@ class _SignupPageState extends State<SignupPage> {
               FilledButton(
                 onPressed: () async {
                   if (signupKey.currentState!.validate()) {
-                    await createUserWithEmailAndPassword();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                      return WidgetTree();
-                    },));
+                    bool signUpSuccess = await createUserWithEmailAndPassword();
+                    if (signUpSuccess == true) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return WidgetTree();
+                          },
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            errorMessage!,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
                 child: Text("Sign Up"),
@@ -59,14 +77,22 @@ class _SignupPageState extends State<SignupPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Already have an account?"),
-                  TextButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return LoginPage();
-                    },));
-                  }, child: Text("Log in here."))
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return LoginPage();
+                          },
+                        ),
+                      );
+                    },
+                    child: Text("Log in here."),
+                  ),
                 ],
               ),
-              SizedBox(height: 100)
+              SizedBox(height: 100),
             ],
           ),
         ),
