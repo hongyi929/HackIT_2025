@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/Tasks/add_tasks_page.dart';
+import 'package:hackit_2025/views/pages/Tasks/task_display_page.dart';
 import 'package:hackit_2025/views/widgets/filter_button.dart';
 import 'package:hackit_2025/views/widgets/task_widget.dart';
 
@@ -14,7 +15,8 @@ class TasksPage extends StatefulWidget {
   @override
   State<TasksPage> createState() => _TasksPageState();
 }
-  String? uid = FirebaseAuth.instance.currentUser!.uid;
+
+String? uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _TasksPageState extends State<TasksPage> {
   String? selectedCategory;
@@ -24,8 +26,9 @@ class _TasksPageState extends State<TasksPage> {
       .instance
       .collection("tasks")
       .where("user", isEqualTo: uid)
+      .where("completed", isEqualTo: false)
       .snapshots();
-      
+
   @override
   Widget build(BuildContext context) {
     uid = FirebaseAuth.instance.currentUser!.uid;
@@ -81,6 +84,7 @@ class _TasksPageState extends State<TasksPage> {
                                       stream = FirebaseFirestore.instance
                                           .collection("tasks")
                                           .where("user", isEqualTo: uid)
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
@@ -105,6 +109,7 @@ class _TasksPageState extends State<TasksPage> {
                                             isEqualTo: (uid! + "star")
                                                 .toString(),
                                           )
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
@@ -136,6 +141,7 @@ class _TasksPageState extends State<TasksPage> {
                                                     .docs[index - 2]
                                                     .data()['categoryName'],
                                           )
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
@@ -166,9 +172,11 @@ class _TasksPageState extends State<TasksPage> {
                   } else {
                     print(snapshot.data!.docs);
                     return AnimatedSwitcher(
+                    
                       duration: Duration(milliseconds: 300),
                       child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
+                         key: ValueKey(snapshot.data!.docs.length),
                         itemBuilder: (context, index) {
                           Map<String, dynamic> taskMap = snapshot
                               .data!
@@ -193,20 +201,43 @@ class _TasksPageState extends State<TasksPage> {
                                   } else {
                                     return AnimatedSwitcher(
                                       duration: Duration(milliseconds: 300),
-                                      child: TaskWidget(
-                                        title: taskMap['title'],
-                                        description: taskMap['description'],
-                                        date: taskMap['date'],
-                                        categoryName: categoryStream
-                                            .data!['categoryName'],
-                                        categoryColor: categoryStream
-                                            .data!['categoryColor'],
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return TaskDisplayPage(
+                                                  title: taskMap['title'],
+                                                  description:
+                                                      taskMap['description'],
+                                                  date: taskMap['date'],
+                                                  categoryName: categoryStream
+                                                      .data!['categoryName'],
+                                                  categoryColor: categoryStream
+                                                      .data!['categoryColor'],
+                                                  docid: taskMap['docid'],
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: TaskWidget(
+                                          title: taskMap['title'],
+                                          description: taskMap['description'],
+                                          date: taskMap['date'],
+                                          categoryName: categoryStream
+                                              .data!['categoryName'],
+                                          categoryColor: categoryStream
+                                              .data!['categoryColor'],
+                                          docid: taskMap['docid'],
+                                        ),
                                       ),
                                     );
                                   }
                                 },
                               ),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                             ],
                           );
                         },
