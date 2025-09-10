@@ -1,24 +1,34 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NotifService {
   final notificationsPlugin = FlutterLocalNotificationsPlugin();
   // Why have a underscore value and normal value?
   bool _isInitialized = false;
-  bool get isInitialized => _isInitialized;
+  bool get isInitialized => _isInitialized; // What is this line all about
 
   //INITIALIZE
   Future<void> initNotification() async {
-    if (_isInitialized) return; // prevent re-initialization
+    if (_isInitialized == true) {
+      return;
+    } // prevent re-initialization
     //prepare Android init settings
+    else {
+      const initSettingsAndroid = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      ); // To find icon of app I think
 
-    const initSettingsAndroid = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    ); // To find icon of app I think
+      const initSettings = InitializationSettings(android: initSettingsAndroid);
 
-    const initSettings = InitializationSettings(android: initSettingsAndroid);
+      // initialize plugin
+      await notificationsPlugin.initialize(initSettings);
 
-    // initialize plugin
-    await notificationsPlugin.initialize(initSettings);
+      if (await Permission.notification.isDenied) {
+        await Permission.notification.request();
+      }
+
+      _isInitialized = true;
+    }
   }
 
   // NOTIFICATIONS DETAIL SETUP
@@ -45,7 +55,7 @@ class NotifService {
       id,
       title,
       body,
-      const NotificationDetails(),
+      notificationDetails(),
     );
   }
 }
