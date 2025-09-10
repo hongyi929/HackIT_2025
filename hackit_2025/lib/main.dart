@@ -11,10 +11,10 @@ import 'package:hackit_2025/widget_tree.dart';
 void main() async {
   // Initialise and connect to firebase platform
   WidgetsFlutterBinding.ensureInitialized();
-  // Init notifications
-
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialise Notifications Service
+  await NotifService().initNotification();
+  
   runApp(const MyApp());
 }
 
