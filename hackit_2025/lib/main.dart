@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/firebase_options.dart';
+import 'package:hackit_2025/services/notif_service.dart';
 import 'package:hackit_2025/views/pages/welcome_page.dart';
 import 'package:hackit_2025/widget_tree.dart';
 
@@ -10,6 +11,9 @@ import 'package:hackit_2025/widget_tree.dart';
 void main() async {
   // Initialise and connect to firebase platform
   WidgetsFlutterBinding.ensureInitialized();
+  // Init notifications
+
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
