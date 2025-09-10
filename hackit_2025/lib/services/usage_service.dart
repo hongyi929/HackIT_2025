@@ -51,7 +51,8 @@ Future<bool> ensureUsagePermission() async {
     final now = DateTime.now();
     await AppUsage().getAppUsage(now.subtract(const Duration(minutes: 1)), now);
     return true;
-  } on PlatformException { // On any exception, it means its not enabled, so user is redirected to allow permissions
+  } on PlatformException {
+    // On any exception, it means its not enabled, so user is redirected to allow permissions
     const intent = AndroidIntent(
       action: 'android.settings.USAGE_ACCESS_SETTINGS',
     );
@@ -66,14 +67,30 @@ Future<bool> ensureUsagePermission() async {
   }
 }
 
-// STEP 2 — Load usage for the selected range, sum per app, sort,
-// then look up friendly name + icon via installed_apps.
-Future<List<AppUsageRow>> loadUsage(TimeRange range, {int limit = 10}) async {
+Future<List<AppUsageRow>> loadUsage(TimeRange range, {int limit = 10}) {
   final b = rangeBounds(range);
+  return loadUsageRange(b.start, b.end, limit: limit);
+}
 
+// STEP 3 — Helpers used by the UI
+Duration totalUsage(List<AppUsageRow> rows) =>
+    rows.fold(Duration.zero, (sum, r) => sum + r.usage);
+
+String formatDuration(Duration d) {
+  final h = d.inHours;
+  final m = d.inMinutes.remainder(60);
+  return h > 0 ? '${h}h ${m}m' : '${m}m';
+}
+
+// load usage for an explicit [start, end) window
+Future<List<AppUsageRow>> loadUsageRange(
+  DateTime start,
+  DateTime end, {
+  int limit = 10,
+}) async {
   List<AppUsageInfo> raw;
   try {
-    raw = await AppUsage().getAppUsage(b.start, b.end);
+    raw = await AppUsage().getAppUsage(start, end);
   } on PlatformException {
     return [];
   } catch (_) {
@@ -96,7 +113,6 @@ Future<List<AppUsageRow>> loadUsage(TimeRange range, {int limit = 10}) async {
   for (final e in top.take(limit)) {
     String name = e.key;
     Uint8List? icon;
-
     try {
       final AppInfo? app = await InstalledApps.getAppInfo(e.key, null);
       if (app != null) {
@@ -116,14 +132,4 @@ Future<List<AppUsageRow>> loadUsage(TimeRange range, {int limit = 10}) async {
   }
 
   return rows;
-}
-
-// STEP 3 — Helpers used by the UI
-Duration totalUsage(List<AppUsageRow> rows) =>
-    rows.fold(Duration.zero, (sum, r) => sum + r.usage);
-
-String formatDuration(Duration d) {
-  final h = d.inHours;
-  final m = d.inMinutes.remainder(60);
-  return h > 0 ? '${h}h ${m}m' : '${m}m';
 }
