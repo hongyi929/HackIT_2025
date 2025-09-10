@@ -52,6 +52,7 @@ dependencies:
   flutter_overlay_window: ^0.5.0
   firebase_auth: ^6.0.2
   fl_chart: ^1.1.0 # chart for statistics_page
+  flutter_local_notifications: ^19.4.1
 
 dev_dependencies:
   flutter_test:
