@@ -27,14 +27,17 @@ class _AddTasksPageState extends State<AddTasksPage> {
     categoryName,
   ) async {
     try {
-      final data = await FirebaseFirestore.instance.collection("tasks").add({
+      final docRef = FirebaseFirestore.instance.collection("tasks").doc();
+      await docRef.set({
         "title": titleController.text.trim(),
         "description": descriptionController.text.trim(),
         "date": dateTimestamp,
-        "category": (FirebaseAuth.instance.currentUser!.uid + categoryName.toString()),
+        "category":
+            (FirebaseAuth.instance.currentUser!.uid + categoryName.toString()),
         "user": FirebaseAuth.instance.currentUser!.uid,
+        "completed": false,
+        "docid": docRef.id,
       });
-      print(data.id);
     } catch (e) {
       print(e);
     }
@@ -53,13 +56,18 @@ class _AddTasksPageState extends State<AddTasksPage> {
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
-      appBar: AppBar(backgroundColor: Color(0xFFF3FAFF), leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
-         
-        Navigator.pop(context);
-        setState(() {
-          dropdownValue = null;
-        });
-      },)),
+      appBar: AppBar(
+        backgroundColor: Color(0xFFF3FAFF),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+            setState(() {
+              dropdownValue = null;
+            });
+          },
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Form(
