@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/views/pages/Tasks/task_edit_page.dart';
 import 'package:hackit_2025/views/widgets/date_input_widget.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
 import 'package:hackit_2025/views/widgets/task_edit_widget.dart';
 import 'package:intl/intl.dart';
-
+// Need to change this to a stream listener, so after edit it updates!
+// Or faster would be to pushReplace in display, and pushReplace back after add
+// To reduce codetime.
 class TaskDisplayPage extends StatefulWidget {
   const TaskDisplayPage({
     super.key,
@@ -28,26 +31,25 @@ class TaskDisplayPage extends StatefulWidget {
   State<TaskDisplayPage> createState() => _TaskDisplayPageState();
 }
 
-
-
 TextEditingController titleController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
 TextEditingController dateController = TextEditingController();
 TextEditingController categoryNameController = TextEditingController();
 
-
 class _TaskDisplayPageState extends State<TaskDisplayPage> {
   Future<void> updateTask(titleController, descriptionController, date) async {
-  final data = FirebaseFirestore.instance.collection("tasks").doc(widget.docid);
-  await data.update({
-    "title": titleController,
-    "description": descriptionController,
-    "date": date,
-  });
-}
-  
+    final data = FirebaseFirestore.instance
+        .collection("tasks")
+        .doc(widget.docid);
+    await data.update({
+      "title": titleController,
+      "description": descriptionController,
+      "date": date,
+    });
+  }
+
   final formKey = GlobalKey<FormState>();
-  
+
   @override
   Widget build(BuildContext context) {
     Timestamp newDate = widget.date;
@@ -64,6 +66,28 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
         leading: null,
         title: Text("Task Editor"),
         scrolledUnderElevation: 0.0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return TaskEditPage(
+                      title: widget.title,
+                      description: widget.description,
+                      date: widget.date,
+                      categoryName: widget.categoryName,
+                      categoryColor: widget.categoryColor,
+                      docid: widget.docid,
+                    );
+                  },
+                ),
+              );
+            },
+            icon: Icon(Icons.edit),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 100),
@@ -128,8 +152,8 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
 
                       SizedBox(),
                       FilledButton(
-                        onPressed: () async{
-                          if (formKey.currentState!.validate())  {
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
                             await updateTask(
                               titleController.text,
                               descriptionController.text,
@@ -137,7 +161,6 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
                             );
                             Navigator.pop(context);
                             print("hi");
-                            
                           }
                           ;
                         },
