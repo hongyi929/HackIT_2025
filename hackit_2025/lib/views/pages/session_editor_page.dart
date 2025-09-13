@@ -21,6 +21,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
           children: [
             InputWidget(title: "Title", controller: titleController),
             InputWidget(title: "Description", controller: descriptionController)
+            
           ],
         ),
       )
