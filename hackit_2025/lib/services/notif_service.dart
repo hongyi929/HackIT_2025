@@ -58,4 +58,11 @@ class NotifService {
       notificationDetails(),
     );
   }
+
+  //Method to schedule notification for a specific time and day
+  // Hour: 0-23
+  // minute 0-59
+
 }
+
+
