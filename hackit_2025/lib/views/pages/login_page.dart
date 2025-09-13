@@ -14,17 +14,19 @@ class LoginPage extends StatefulWidget {
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 final signupKey = GlobalKey<FormState>();
+String? errorMessage;
 
-Future<void> signInWithEmailAndPassword() async {
+Future<bool> signInWithEmailAndPassword() async {
   try {
     final userCredential = await FirebaseAuth.instance
       .signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-  print(userCredential);
+      return true;
   } on FirebaseAuthException catch (e) {
-    print(e.message);
+    errorMessage = e.toString();
+    return false;
   }
 }
 
@@ -46,10 +48,17 @@ class _LoginPageState extends State<LoginPage> {
               FilledButton(
                 onPressed: () async {
                   if (signupKey.currentState!.validate()) {
-                    await signInWithEmailAndPassword();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                      return WidgetTree(); 
-                    },));
+                    bool loginSuccess = await signInWithEmailAndPassword();
+                    if (loginSuccess == true) {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                        return WidgetTree();
+                      },));
+                    }
+                    else {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(errorMessage!, textAlign: TextAlign.center,)));
+                    }
                   }
                 },
                 child: Text("Log in"),

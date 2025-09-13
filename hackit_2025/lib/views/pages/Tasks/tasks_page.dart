@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/Tasks/add_tasks_page.dart';
+import 'package:hackit_2025/views/pages/Tasks/task_display_page.dart';
 import 'package:hackit_2025/views/widgets/filter_button.dart';
 import 'package:hackit_2025/views/widgets/task_widget.dart';
 
@@ -15,19 +16,22 @@ class TasksPage extends StatefulWidget {
   State<TasksPage> createState() => _TasksPageState();
 }
 
-String? selectedCategory;
-int? selectedIndex = 0;
-Stream<QuerySnapshot<Map<String, dynamic>>>? stream = stream = FirebaseFirestore
-    .instance
-    .collection("tasks")
-    .where("user", isEqualTo: uid)
-    .snapshots();
-
 String? uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _TasksPageState extends State<TasksPage> {
+  String? selectedCategory;
+
+  int? selectedIndex = 0;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? stream = FirebaseFirestore
+      .instance
+      .collection("tasks")
+      .where("user", isEqualTo: uid)
+      .where("completed", isEqualTo: false)
+      .snapshots();
+
   @override
   Widget build(BuildContext context) {
+    uid = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -80,6 +84,7 @@ class _TasksPageState extends State<TasksPage> {
                                       stream = FirebaseFirestore.instance
                                           .collection("tasks")
                                           .where("user", isEqualTo: uid)
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
@@ -101,13 +106,15 @@ class _TasksPageState extends State<TasksPage> {
                                           .where("user", isEqualTo: uid)
                                           .where(
                                             "category",
-                                            isEqualTo: (uid! + "star").toString(),
+                                            isEqualTo: (uid! + "star")
+                                                .toString(),
                                           )
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
                                 ),
-                                SizedBox(width: 10)
+                                SizedBox(width: 10),
                               ],
                             );
                           } else {
@@ -129,9 +136,12 @@ class _TasksPageState extends State<TasksPage> {
                                             "category",
                                             isEqualTo:
                                                 uid! +
-                                                categoryStream.data!.docs[index - 2]
+                                                categoryStream
+                                                    .data!
+                                                    .docs[index - 2]
                                                     .data()['categoryName'],
                                           )
+                                          .where("completed", isEqualTo: false)
                                           .snapshots();
                                     });
                                   },
@@ -162,9 +172,11 @@ class _TasksPageState extends State<TasksPage> {
                   } else {
                     print(snapshot.data!.docs);
                     return AnimatedSwitcher(
+                    
                       duration: Duration(milliseconds: 300),
                       child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
+                         key: ValueKey(snapshot.data!.docs.length),
                         itemBuilder: (context, index) {
                           Map<String, dynamic> taskMap = snapshot
                               .data!
@@ -189,20 +201,43 @@ class _TasksPageState extends State<TasksPage> {
                                   } else {
                                     return AnimatedSwitcher(
                                       duration: Duration(milliseconds: 300),
-                                      child: TaskWidget(
-                                        title: taskMap['title'],
-                                        description: taskMap['description'],
-                                        date: taskMap['date'],
-                                        categoryName: categoryStream
-                                            .data!['categoryName'],
-                                        categoryColor: categoryStream
-                                            .data!['categoryColor'],
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return TaskDisplayPage(
+                                                  title: taskMap['title'],
+                                                  description:
+                                                      taskMap['description'],
+                                                  date: taskMap['date'],
+                                                  categoryName: categoryStream
+                                                      .data!['categoryName'],
+                                                  categoryColor: categoryStream
+                                                      .data!['categoryColor'],
+                                                  docid: taskMap['docid'],
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: TaskWidget(
+                                          title: taskMap['title'],
+                                          description: taskMap['description'],
+                                          date: taskMap['date'],
+                                          categoryName: categoryStream
+                                              .data!['categoryName'],
+                                          categoryColor: categoryStream
+                                              .data!['categoryColor'],
+                                          docid: taskMap['docid'],
+                                        ),
                                       ),
                                     );
                                   }
                                 },
                               ),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                             ],
                           );
                         },
