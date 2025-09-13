@@ -217,11 +217,9 @@ class _StatsPageState extends State<StatsPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'SCREEN TIME',
+                        'Screen Time',
                         style: KTextStyle.header3Text.copyWith(
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
