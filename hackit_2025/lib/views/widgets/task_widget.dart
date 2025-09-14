@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:intl/intl.dart';
@@ -13,36 +12,72 @@ class TaskWidget extends StatefulWidget {
     required this.categoryName,
     required this.categoryColor,
     required this.docid,
+    this.showCheckbox = true,
+    this.checkboxValue, // parent-controlled value (optional)
+    this.onCheckboxChanged, // parent-controlled handler (optional)
   });
 
+  // Presentation
   final String title;
   final String description;
   final Timestamp date;
   final String categoryName;
   final int categoryColor;
+
+  // Identity
   final String docid;
+
+  // Checkbox control
+  final bool showCheckbox;
+  final bool? checkboxValue;
+  final ValueChanged<bool?>? onCheckboxChanged;
 
   @override
   State<TaskWidget> createState() => _TaskWidgetState();
 }
 
-bool boolCheck = false;
-double opacity = 1;
-
 class _TaskWidgetState extends State<TaskWidget> {
+  // Local checkbox state used only when the parent doesn't control it.
+  bool _localChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.checkboxValue != null) _localChecked = widget.checkboxValue!;
+  }
+
+  @override
+  void didUpdateWidget(covariant TaskWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep in sync with parent if it provides a value
+    if (widget.checkboxValue != null && widget.checkboxValue != _localChecked) {
+      _localChecked = widget.checkboxValue!;
+    }
+  }
+
+  Future<void> _defaultComplete() async {
+    // Original behavior for the Tasks page
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(widget.docid)
+        .update({'completed': true});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final checkboxValue = widget.checkboxValue ?? _localChecked;
+
     return AnimatedOpacity(
       opacity: 1,
       duration: const Duration(milliseconds: 300),
       child: Container(
         decoration: BoxDecoration(
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.grey,
               spreadRadius: 2,
               blurRadius: 2,
-              offset: const Offset(2, 2),
+              offset: Offset(2, 2),
             ),
           ],
           borderRadius: BorderRadius.circular(15),
@@ -50,30 +85,23 @@ class _TaskWidgetState extends State<TaskWidget> {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             colors: [Color(widget.categoryColor), Colors.white],
-            stops: [0.065, 0.065],
+            stops: const [0.065, 0.065],
           ),
         ),
-      
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: SizedBox(
             height: 100,
             width: double.infinity,
-            // Row to separate 2 items: column of description items, and checkbox.
-            // Expanded widget is used so descriptor items take up all available space from checkbox
             child: Row(
               children: [
-                SizedBox(width: 15),
+                const SizedBox(width: 15),
                 Expanded(
-                  // Column for the 3 main descriptor items (Header, Desc, Date.)
-                  // Extra row is used to separate calendar icon and date text.
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.title, style: KTextStyle.header3Text),
-                      // softWrap argument to allow text to go into new line if overflows first line
-                      // maxLines to determine how many lines before ellipsis is triggered
                       Text(
                         widget.description,
                         softWrap: true,
@@ -82,11 +110,11 @@ class _TaskWidgetState extends State<TaskWidget> {
                       ),
                       Row(
                         children: [
-                          Icon(Icons.calendar_month),
-                          SizedBox(width: 10),
+                          const Icon(Icons.calendar_month),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              "${DateFormat("MMM d yyyy").format(widget.date.toDate())}  |  ${widget.categoryName}",
+                              "${DateFormat('MMM d yyyy').format(widget.date.toDate())}  |  ${widget.categoryName}",
                               softWrap: true,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -97,21 +125,28 @@ class _TaskWidgetState extends State<TaskWidget> {
                     ],
                   ),
                 ),
-                Checkbox(
-                  value: boolCheck,
-                  onChanged: (value) async {
-                    setState(() async {
-                      print("hi");
-                      await FirebaseFirestore.instance
-                          .collection("tasks")
-                          .doc(widget.docid)
-                          .update({"completed": true});
-                      setState(() {
-                        boolCheck = value!;
-                        
-                      });
-                    });
-                  },
+
+                // Trailing checkbox (optional)
+                Visibility(
+                  visible: widget.showCheckbox,
+                  maintainState: false,
+                  maintainAnimation: false,
+                  maintainSize: false,
+                  child: Checkbox(
+                    value: checkboxValue,
+                    onChanged: (val) async {
+                      if (widget.onCheckboxChanged != null) {
+                        // Work Session flow: parent decides (e.g., toggles `semicomplete`)
+                        widget.onCheckboxChanged!(val);
+                      } else {
+                        // Tasks page default: mark task completed in Firestore
+                        await _defaultComplete();
+                        if (mounted) {
+                          setState(() => _localChecked = val ?? false);
+                        }
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

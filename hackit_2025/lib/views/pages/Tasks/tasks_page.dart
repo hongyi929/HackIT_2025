@@ -31,6 +31,7 @@ class _TasksPageState extends State<TasksPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     uid = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       body: Padding(
@@ -172,11 +173,10 @@ class _TasksPageState extends State<TasksPage> {
                   } else {
                     print(snapshot.data!.docs);
                     return AnimatedSwitcher(
-                    
                       duration: Duration(milliseconds: 300),
                       child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
-                         key: ValueKey(snapshot.data!.docs.length),
+                        key: ValueKey(snapshot.data!.docs.length),
                         itemBuilder: (context, index) {
                           Map<String, dynamic> taskMap = snapshot
                               .data!
@@ -263,7 +263,7 @@ class _TasksPageState extends State<TasksPage> {
         },
         icon: Icon(Icons.add, color: Colors.white),
         label: Text("Add task", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF217AFF),
+        backgroundColor: cs.primary,
       ),
     );
   }

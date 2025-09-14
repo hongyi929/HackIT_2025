@@ -20,21 +20,19 @@ class DateInputWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title),
+        Text(title, style: KTextStyle.header2Text),
         TextFormField(
           style: KTextStyle.descriptionText,
           textAlignVertical: TextAlignVertical.center,
-          validator: (value) => value!.isEmpty ? "Date needs to be filled" : null,
+          validator: (value) =>
+              value!.isEmpty ? "Date needs to be filled" : null,
           decoration: InputDecoration(
             hintText: "Due Date",
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 1.5
-              )
+              borderSide: BorderSide(color: Colors.grey, width: 1.5),
             ),
             isCollapsed: true,
             contentPadding: EdgeInsets.symmetric(vertical: 16.0),
@@ -51,9 +49,7 @@ class DateInputWidget extends StatelessWidget {
             if (datetime != null) {
               print("$datetime is here");
               onChanged(Timestamp.fromDate(datetime));
-              String formattedDate = DateFormat(
-                "d MMM yyyy",
-              ).format(datetime);
+              String formattedDate = DateFormat("d MMM yyyy").format(datetime);
               controller.text = formattedDate;
             }
           },

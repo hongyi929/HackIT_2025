@@ -12,7 +12,7 @@ class InputWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title),
+        Text(title, style: KTextStyle.header2Text),
         SizedBox(height: 5),
         TextFormField(
           validator: (value) =>

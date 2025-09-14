@@ -41,7 +41,6 @@ class _TaskEditPageState extends State<TaskEditPage> {
   TextEditingController dateController = TextEditingController();
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
-
   Future<void> updateTask(
     titleController,
     descriptionController,
@@ -59,14 +58,16 @@ class _TaskEditPageState extends State<TaskEditPage> {
     });
   }
 
-Future<Map<String, dynamic>> initCategoryCollection(selectedCategory) async{
-  final categoryDoc = await FirebaseFirestore.instance.collection("category").doc(uid + selectedCategory).get();
-  return categoryDoc.data()!;
-}
+  Future<Map<String, dynamic>> initCategoryCollection(selectedCategory) async {
+    final categoryDoc = await FirebaseFirestore.instance
+        .collection("category")
+        .doc(uid + selectedCategory)
+        .get();
+    return categoryDoc.data()!;
+  }
 
   @override
   Widget build(BuildContext context) {
-    
     Timestamp newDate = widget.date;
 
     titleController.text = widget.title;
@@ -75,7 +76,6 @@ Future<Map<String, dynamic>> initCategoryCollection(selectedCategory) async{
     dropdownValue = widget.categoryName;
     final taskKey = GlobalKey<FormState>();
     String? selectedCategory = widget.categoryName;
-    
 
     return Scaffold(
       backgroundColor: Color(0xFFF3FAFF),
@@ -110,7 +110,7 @@ Future<Map<String, dynamic>> initCategoryCollection(selectedCategory) async{
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Add Task", style: KTextStyle.header1Text),
+              Text("Add Task", style: KTextStyle.titleText),
               SizedBox(height: 20),
               InputWidget(title: "Task", controller: titleController),
               SizedBox(height: 20),
@@ -145,10 +145,24 @@ Future<Map<String, dynamic>> initCategoryCollection(selectedCategory) async{
                       newDate,
                       selectedCategory,
                     );
-                    final categoryDoc = await initCategoryCollection(selectedCategory);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                      return TaskDisplayPage(title: titleController.text, description: descriptionController.text, date: newDate, categoryName: selectedCategory!, categoryColor: categoryDoc['categoryColor'], docid: widget.docid);
-                    },));
+                    final categoryDoc = await initCategoryCollection(
+                      selectedCategory,
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return TaskDisplayPage(
+                            title: titleController.text,
+                            description: descriptionController.text,
+                            date: newDate,
+                            categoryName: selectedCategory!,
+                            categoryColor: categoryDoc['categoryColor'],
+                            docid: widget.docid,
+                          );
+                        },
+                      ),
+                    );
                   }
                 },
                 child: Text("Save"),
