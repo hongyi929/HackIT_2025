@@ -26,10 +26,11 @@ class TaskWidget extends StatefulWidget {
   State<TaskWidget> createState() => _TaskWidgetState();
 }
 
-bool boolCheck = false;
+
 double opacity = 1;
 
 class _TaskWidgetState extends State<TaskWidget> {
+  bool boolCheck = false;
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(

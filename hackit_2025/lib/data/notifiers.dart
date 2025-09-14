@@ -11,3 +11,7 @@ ValueNotifier<int> eyeTimerNotifier = ValueNotifier(1200);
 ValueNotifier<bool> eyeBreakNotifier = ValueNotifier(false);
 
 ValueNotifier<bool> eyeStartNotifier = ValueNotifier(false);
+
+ValueNotifier<bool> appBlockNotifier = ValueNotifier(true);
+
+ValueNotifier<int> timeBlockLengthNotifier = ValueNotifier(0);

@@ -14,32 +14,30 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
   final service = FlutterBackgroundService();
   StreamSubscription? listenUpdate;
 
+  @override
+  void initState() {
+    super.initState();
 
-@override
-void initState() {
-  super.initState();
+    listenUpdate = service.on("update_timer").listen((event) {
+      if (event != null) {
+        // Update notifiers here
+        eyeTimerNotifier.value = event["timeLeft"] ?? eyeTimerNotifier.value;
+        eyeBreakNotifier.value = event["isBreak"] ?? eyeBreakNotifier.value;
+        print("test invoked?");
+        print(eyeTimerNotifier.value);
+      }
+    });
+  }
 
-  listenUpdate = service.on("update_timer").listen((event) {
-    if (event != null) {
-      // Update notifiers here
-      eyeTimerNotifier.value = event["timeLeft"] ?? eyeTimerNotifier.value;
-      eyeBreakNotifier.value = event["isBreak"] ?? eyeBreakNotifier.value;
-      print("test invoked?");
-      print(eyeTimerNotifier.value);
-    }
-  });
-}
-
-@override
-void dispose() {
-  listenUpdate?.cancel(); // remove listener when widget is removed
-  super.dispose();
-}
+  @override
+  void dispose() {
+    listenUpdate?.cancel(); // remove listener when widget is removed
+    super.dispose();
+  }
 
   Widget buildButton() {
     return eyeStartNotifier.value
@@ -47,7 +45,7 @@ void dispose() {
             onPressed: () {
               eyeStartNotifier.value = !eyeStartNotifier.value;
               service.invoke("updateServiceIsolate1", {
-                "startValue" : eyeStartNotifier.value
+                "startValue": eyeStartNotifier.value,
               });
               setState(() {});
             },
@@ -57,7 +55,7 @@ void dispose() {
             onPressed: () {
               eyeStartNotifier.value = !eyeStartNotifier.value;
               service.invoke("updateServiceIsolate1", {
-                "startValue" : eyeStartNotifier.value
+                "startValue": eyeStartNotifier.value,
               });
               setState(() {});
             },
@@ -70,8 +68,8 @@ void dispose() {
       valueListenable: eyeTimerNotifier,
       builder: (context, value, child) {
         String twoDigits(int n) => n.toString().padLeft(2, '0');
-        final minutes = twoDigits(value~/60);
-        final seconds = twoDigits(value%60);
+        final minutes = twoDigits(value ~/ 60);
+        final seconds = twoDigits(value % 60);
         return Text("$minutes: $seconds");
       },
     );
@@ -104,11 +102,19 @@ void dispose() {
                   children: [
                     Text("Work Session"),
                     Text("Focus your mind with one tap."),
-                    FilledButton(onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return SessionEditorPage();
-                      },));
-                    }, child: Text("Get started")),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return SessionEditorPage();
+                            },
+                          ),
+                        );
+                      },
+                      child: Text("Get started"),
+                    ),
                   ],
                 ),
               ),
@@ -145,7 +151,7 @@ void dispose() {
                                         : eyeTimer / maxMainSeconds,
                                     strokeWidth: 8,
                                   );
-                                }
+                                },
                               );
                             },
                           ),
@@ -159,16 +165,9 @@ void dispose() {
                 ),
               ),
             ),
-
-            FilledButton(
-              onPressed: () {
-                FlutterBackgroundService().invoke("setAsForeground");
-              },
-              child: Text("Send notification"),
-            ),
           ],
         ),
       ),
     );
-  }
+  } 
 }
