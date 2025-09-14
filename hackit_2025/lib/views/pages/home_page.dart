@@ -5,7 +5,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/services/notif_service.dart';
-import 'package:hackit_2025/views/pages/session_editor_page.dart';
+import 'package:hackit_2025/views/pages/WorkSession/session_editor_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -92,16 +92,22 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text("Work Session", style: KTextStyle.header1Text),
+            ),
             SizedBox(
-              height: 140,
+              height: 160,
               width: double.infinity,
               child: Card(
                 color: Colors.white,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Work Session"),
+                    Text("Work Session", style: KTextStyle.header2Text),
                     Text("Focus your mind with one tap."),
+                    SizedBox(height: 12),
+
                     FilledButton(
                       onPressed: () {
                         Navigator.push(
@@ -125,7 +131,7 @@ class _HomePageState extends State<HomePage> {
               child: Text("Eye Break", style: KTextStyle.header1Text),
             ),
             SizedBox(
-              height: 200,
+              height: 220,
               width: double.infinity,
               child: Card(
                 color: Colors.white,

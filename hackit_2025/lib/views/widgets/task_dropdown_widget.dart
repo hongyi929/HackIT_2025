@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/views/pages/add_category_page.dart';
 import 'package:hackit_2025/views/widgets/category_dropdown_item.dart';
 
@@ -26,9 +27,7 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator()
-          );
+          return Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData) {
           return Text("There is no data!");
@@ -37,8 +36,8 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Text("Category"),
+            SizedBox(height: 24),
+            Text("Category", style: KTextStyle.header2Text),
             SizedBox(
               width: double.infinity,
               child: ButtonTheme(
@@ -54,7 +53,9 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
                         value: categoryDictionary['categoryName'].toString(),
                         child: CategoryDropdownItem(
                           categoryName: categoryDictionary['categoryName'],
-                          categoryColor: Color(categoryDictionary['categoryColor']),
+                          categoryColor: Color(
+                            categoryDictionary['categoryColor'],
+                          ),
                         ),
                       );
                     }).toList(),
@@ -82,9 +83,7 @@ class _TaskDropdownWidgetState extends State<TaskDropdownWidget> {
                             return AddCategoryPage();
                           },
                         ),
-                        
                       );
-                      
                     } else {
                       dropdownValue = value;
                       widget.onChanged(value);

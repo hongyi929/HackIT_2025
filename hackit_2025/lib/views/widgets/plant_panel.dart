@@ -13,7 +13,7 @@ class PlantPanel extends StatefulWidget {
 }
 
 class _PlantPanelState extends State<PlantPanel>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   final _service = PlantService();
 
@@ -24,16 +24,15 @@ class _PlantPanelState extends State<PlantPanel>
   int _seenLevel = 0;
   int _seenStage = 1;
 
-  bool _shouldPlayOnceNow = true; // play once each visit
-
-  @override
-  bool get wantKeepAlive => true;
+  // play-once logic
+  bool _shouldPlayOnceNow = true;
+  bool _isLottieReady = false; // composition loaded?
+  bool _askedToPlay = false; // we want to play when ready
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    Future.microtask(_loadAndMaybeCelebrate);
   }
 
   @override
@@ -48,20 +47,23 @@ class _PlantPanelState extends State<PlantPanel>
     _seenStage = prefs.getInt('plant.seenStage') ?? 1;
 
     final progress = await _service.load();
-
     if (!mounted) return;
+
     setState(() {
       _xp = progress.xp;
       _level = progress.level;
       _stage = progress.stage;
-      _shouldPlayOnceNow = true; // ensure we play after asset loads
+      _shouldPlayOnceNow = true;
     });
 
     if (_level > _seenLevel) {
       final stageChanged = _stage > _seenStage;
       await _showLevelUpDialog(level: _level, stageChanged: stageChanged);
-      // NOTE: do NOT start the controller here — wait for onLoaded.
     }
+
+    // ask to play; actual start will wait until Lottie is ready
+    _askedToPlay = true;
+    _maybePlay();
 
     await prefs.setInt('plant.seenLevel', _level);
     await prefs.setInt('plant.seenStage', _stage);
@@ -91,11 +93,16 @@ class _PlantPanelState extends State<PlantPanel>
     );
   }
 
-  void _playOnceThenFreeze() {
+  // Start the one-shot playback ONLY when we have a duration.
+  void _maybePlay() {
     if (!mounted) return;
+    if (!_askedToPlay || !_isLottieReady) return;
+
+    _askedToPlay = false; // consume the request
     _controller
       ..stop()
       ..reset();
+
     _controller.forward().whenComplete(() {
       if (!mounted) return;
       _controller.value = 1; // freeze on last frame
@@ -103,22 +110,30 @@ class _PlantPanelState extends State<PlantPanel>
     });
   }
 
+  bool _didInitialLoad = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInitialLoad) {
+      _didInitialLoad = true;
+      _loadAndMaybeCelebrate();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    final cap = nextLevelCap(_level);
-    final expText = cap == null ? '$_xp EXP (MAX)' : '$_xp / $cap EXP';
-
     final cs = Theme.of(context).colorScheme;
     final asset = lottieAssetForStage(_stage);
-
-    // In-level progress numbers (e.g. 51 XP at Lv5 with bounds 50-75 → 1/25)
+    final cap = nextLevelCap(_level);
+    final expText = cap == null ? '$_xp EXP (MAX)' : '$_xp / $cap EXP';
     final p = inLevelProgress(_xp, _level);
+    // debug: see what’s being used
+    debugPrint('PlantPanel → xp=$_xp level=$_level stage=$_stage asset=$asset');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Off-white box around the plant (same vibe as the Stats pie box)
+        // off-white card around the plant
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -130,22 +145,50 @@ class _PlantPanelState extends State<PlantPanel>
             aspectRatio: 1.2,
             child: Lottie.asset(
               asset,
+              key: ValueKey(
+                asset,
+              ), // <-- forces a new composition when path changes
               controller: _controller,
               repeat: false,
+              options: LottieOptions(enableMergePaths: true),
               onLoaded: (composition) {
-                _controller.duration = composition.duration;
-                if (_shouldPlayOnceNow) {
-                  _playOnceThenFreeze();
-                } else {
-                  _controller.value = 1; // keep last frame
+                _controller
+                  ..duration = composition.duration
+                  ..stop()
+                  ..value = 0.0;
+
+                // Choose where to freeze on the timeline for each stage.
+                // Tweak these if your exported files differ.
+                double _freezeProgressForStage(int stage) {
+                  switch (stage) {
+                    case 1:
+                      return 1.0; // ends at the seed — fine
+                    case 2:
+                      return 0.60; // ~60% looks "young"
+                    case 3:
+                      return 0.70; // ~70% looks "bloom"
+                    case 4:
+                      return 0.78; // ~78% looks "mature"
+                    case 5:
+                      return 0.85; // more growth
+                    default:
+                      return 0.75;
+                  }
                 }
+
+                final target = _freezeProgressForStage(_stage).clamp(0.0, 1.0);
+                // Play once up to the 'target' frame, then hold there.
+                _controller.animateTo(
+                  target,
+                  duration: _controller.duration! * target,
+                  curve: Curves.easeOutCubic,
+                );
               },
             ),
           ),
         ),
         const SizedBox(height: 12),
 
-        // Centered: "Level X · {Stage}"
         Center(
           child: Text(
             'Level $_level · ${stageLabel(_stage)}',
@@ -155,8 +198,6 @@ class _PlantPanelState extends State<PlantPanel>
         ),
         const SizedBox(height: 6),
 
-        // Centered: "{got} / {total} EXP" (progress within the current level)
-        // Global EXP text: "current XP / next-level cap", or "MAX" at top level
         Center(
           child: Text(
             expText,
@@ -169,7 +210,6 @@ class _PlantPanelState extends State<PlantPanel>
         ),
         const SizedBox(height: 8),
 
-        // Animated progress bar for *in-level* progress
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: TweenAnimationBuilder<double>(

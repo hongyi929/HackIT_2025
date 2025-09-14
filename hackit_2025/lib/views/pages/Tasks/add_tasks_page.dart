@@ -45,6 +45,7 @@ class _AddTasksPageState extends State<AddTasksPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final FirestoreTaskService firestoreService = FirestoreTaskService();
 
     TextEditingController titleController = TextEditingController();
@@ -76,15 +77,15 @@ class _AddTasksPageState extends State<AddTasksPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Add Task", style: KTextStyle.header1Text),
-              SizedBox(height: 20),
+              Text("Add Task", style: KTextStyle.titleText),
+              SizedBox(height: 24),
               InputWidget(title: "Task", controller: titleController),
-              SizedBox(height: 20),
+              SizedBox(height: 24),
               InputWidget(
                 title: "Description",
                 controller: descriptionController,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 24),
               DateInputWidget(
                 title: "Enter due date",
                 controller: dateController,
@@ -101,24 +102,45 @@ class _AddTasksPageState extends State<AddTasksPage> {
                 },
               ),
 
-              FilledButton(
-                onPressed: () {
-                  if (taskKey.currentState!.validate()) {
-                    uploadTaskToDb(
-                      titleController,
-                      descriptionController,
-                      dateTimestamp!,
-                      selectedCategory,
-                    );
-                    setState(() {
-                      dropdownValue = null;
-                    });
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text("Create Task"),
-              ),
+              SizedBox(height: 64),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: cs.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onPressed: () {
+              if (taskKey.currentState!.validate()) {
+                uploadTaskToDb(
+                  titleController,
+                  descriptionController,
+                  dateTimestamp!,
+                  selectedCategory,
+                );
+                setState(() {
+                  dropdownValue = null;
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text(
+              'Create Task',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
       ),
