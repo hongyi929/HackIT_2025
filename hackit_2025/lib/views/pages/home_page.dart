@@ -27,8 +27,8 @@ class _HomePageState extends State<HomePage> {
         // Update notifiers here
         eyeTimerNotifier.value = event["timeLeft"] ?? eyeTimerNotifier.value;
         eyeBreakNotifier.value = event["isBreak"] ?? eyeBreakNotifier.value;
-        //print("test invoked?");
-        //print(eyeTimerNotifier.value);
+        print("test invoked?");
+        print(eyeTimerNotifier.value);
       }
     });
   }
@@ -107,6 +107,7 @@ class _HomePageState extends State<HomePage> {
                     Text("Work Session", style: KTextStyle.header2Text),
                     Text("Focus your mind with one tap."),
                     SizedBox(height: 12),
+
                     FilledButton(
                       onPressed: () {
                         Navigator.push(
@@ -170,16 +171,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
-            FilledButton(
-              onPressed: () {
-                FlutterBackgroundService().invoke("setAsForeground");
-              },
-              child: Text("Send notification"),
-            ),
           ],
         ),
       ),
     );
-  }
+  } 
 }
