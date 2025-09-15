@@ -56,12 +56,11 @@ Timer? eyeTimer;
 @pragma('vm:entry-point')
 void onStart(ServiceInstance eyeService) async {
   Hive.initFlutter();
-  
-  
 
   DatabaseService appDatabaseService = await DatabaseService.instance();
   var scheduleBox = await Hive.openBox("scheduleBox");
   var timeBlockBox = await Hive.openBox("timeBlockBox");
+  timeBlockBox.clear();
 
   if (eyeService is AndroidServiceInstance) {
     // if android, setup like this for android

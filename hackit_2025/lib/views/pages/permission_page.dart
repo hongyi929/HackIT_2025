@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/views/pages/home_page.dart';
+import 'package:hackit_2025/widget_tree.dart';
 import 'package:usage_stats/usage_stats.dart';
 
 class PermissionPage extends StatefulWidget {
@@ -15,6 +17,9 @@ class PermissionPage extends StatefulWidget {
 class _PermissionPageState extends State<PermissionPage> {
   bool usagePermissionGranted = false;
   bool drawOverOtherAppsPermissionGranted = false;
+  bool get _allGranted =>
+      usagePermissionGranted && drawOverOtherAppsPermissionGranted;
+
   late Timer timer;
 
   @override
@@ -32,8 +37,7 @@ class _PermissionPageState extends State<PermissionPage> {
   void dispose() {
     // TODO: implement dispose
     timer.cancel();
-    super.dispose(
-    );
+    super.dispose();
   }
 
   @override
@@ -45,13 +49,19 @@ class _PermissionPageState extends State<PermissionPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Text("Enable Permissions", style: KTextStyle.header1Text),
-            SizedBox(height: 20),
+            Text("Enable Permissions", style: KTextStyle.titleText),
+            SizedBox(height: 8),
+            Text(
+              "These permissions will enable the app to work as functioned!",
+              style: KTextStyle.descriptionText,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40),
             Container(
               padding: EdgeInsets.all(20),
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.white,
                 border: Border.all(color: cs.outlineVariant.withOpacity(0.4)),
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -60,11 +70,14 @@ class _PermissionPageState extends State<PermissionPage> {
                   Text("Enable Usage Access"),
                   Expanded(child: SizedBox()),
                   usagePermissionGranted
-                      ? Text("hi")
+                      ? Icon(Icons.check_circle, color: Colors.green)
                       : FilledButton(
                           onPressed: () {
                             UsageStats.grantUsagePermission();
                           },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Color(0XFF1B69E0),
+                          ),
                           child: Text("Enable"),
                         ),
                 ],
@@ -75,7 +88,7 @@ class _PermissionPageState extends State<PermissionPage> {
               padding: EdgeInsets.all(20),
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.white,
                 border: Border.all(color: cs.outlineVariant.withOpacity(0.4)),
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -84,7 +97,7 @@ class _PermissionPageState extends State<PermissionPage> {
                   Text("Overlay Permissions"),
                   Expanded(child: SizedBox()),
                   drawOverOtherAppsPermissionGranted
-                      ? Text("hi")
+                      ? Icon(Icons.check_circle, color: Colors.green)
                       : FilledButton(
                           onPressed: () async {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -103,46 +116,46 @@ class _PermissionPageState extends State<PermissionPage> {
                             );
                             setState(() {});
                           },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Color(0XFF1B69E0),
+                          ),
                           child: Text("Enable"),
                         ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(20),
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                border: Border.all(color: cs.outlineVariant.withOpacity(0.4)),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Row(
-                children: [
-                  Text("Permission Name"),
-                  Expanded(child: SizedBox()),
-                  FilledButton(onPressed: () {}, child: Text("Enable")),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(20),
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                border: Border.all(color: cs.outlineVariant.withOpacity(0.4)),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Row(
-                children: [
-                  Text("Permission Name"),
-                  Expanded(child: SizedBox()),
-                  FilledButton(onPressed: () {}, child: Text("Enable")),
-                ],
-              ),
-            ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 50),
+        child: SizedBox(
+          height: 54,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1B69E0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onPressed: _allGranted
+                ? () {
+                    // Replace the stack so there's no back to PermissionPage
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const WidgetTree()),
+                      (route) => false,
+                    );
+                  }
+                : null, // disabled when either permission is missing
+            child: const Text(
+              'Continue',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ),
       ),
     );

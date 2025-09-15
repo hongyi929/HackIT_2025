@@ -44,7 +44,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
           height: 54,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: cs.primary,
+              backgroundColor: Color(0XFF1B69E0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

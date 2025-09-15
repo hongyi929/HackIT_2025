@@ -1,11 +1,19 @@
-// lib/views/pages/progress_page.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/services/user_stats_service.dart';
 import 'package:hackit_2025/views/widgets/plant_panel.dart';
+
+// Format helper
+String _fmtHM(Duration d) {
+  final h = d.inHours;
+  final m = d.inMinutes.remainder(60);
+  return h > 0 ? '${h}h ${m}m' : '${m}m';
+}
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
-
   @override
   State<ProgressPage> createState() => _ProgressPageState();
 }
@@ -21,34 +29,74 @@ class _ProgressPageState extends State<ProgressPage> {
             Text('Progress', style: KTextStyle.titleText),
             const SizedBox(height: 12),
 
-            // -- Metrics row
+            // -- Metrics row (live)
             const SizedBox(height: 12),
-            Row(
-              children: const [
-                Expanded(
-                  child: _MetricCard(label: 'Tasks completed', value: '28'),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: _MetricCard(label: 'Time studied', value: '2h 45min'),
-                ),
-              ],
+            FutureBuilder<_ProgressMetrics>(
+              future: _loadProgressMetrics(),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                final data =
+                    snap.data ??
+                    const _ProgressMetrics(tasksDone: 0, study: Duration.zero);
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _MetricCard(
+                        label: 'Tasks completed',
+                        value: '${data.tasksDone}',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MetricCard(
+                        label: 'Time studied',
+                        value: _fmtHM(data.study),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: 12),
 
-            // Place your "Today / This week / Overall" filter chips here later
-            // … then the plant:
+            // Plant shows current XP/level/stage
             const PlantPanel(),
 
             const SizedBox(height: 24),
-
-            // (Optional) your level bar, “tasks to next level”, etc…
           ],
         ),
       ),
     );
   }
+
+  Future<_ProgressMetrics> _loadProgressMetrics() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    // Tasks completed (safe fallback without aggregation)
+    final tasksSnap = await FirebaseFirestore.instance
+        .collection('tasks')
+        .where('user', isEqualTo: uid)
+        .where('completed', isEqualTo: true)
+        .get();
+    final completedCount = tasksSnap.docs.length;
+
+    // Total study time
+    final studyTotal = await UserStatsService.I.getStudyTotal();
+
+    return _ProgressMetrics(tasksDone: completedCount, study: studyTotal);
+  }
+}
+
+class _ProgressMetrics {
+  final int tasksDone;
+  final Duration study;
+  const _ProgressMetrics({required this.tasksDone, required this.study});
 }
 
 class _MetricCard extends StatelessWidget {

@@ -24,25 +24,22 @@ void main() async {
   await initializeService();
   var scheduleBox = await Hive.openBox("localScheduleBox");
   var timeBlockBox = await Hive.openBox("localTimeBlockBox");
-  
+
   timeBlockLengthNotifier.value = timeBlockBox.length;
   print(timeBlockBox.length);
+  timeBlockBox.clear();
   // DIsplay over other apps and Usage Access
-
 
   runApp(const MyApp());
 }
 
-  @pragma("vm:entry-point")
-  void overlayMain() async {
-    debugPrint("Starting Alerting Window Isolate!");
-    WidgetsFlutterBinding.ensureInitialized();
+@pragma("vm:entry-point")
+void overlayMain() async {
+  debugPrint("Starting Alerting Window Isolate!");
+  WidgetsFlutterBinding.ensureInitialized();
 
-    runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: OverlayWidget()
-  ));
-  }
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OverlayWidget()));
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
