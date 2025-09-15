@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/data/notifiers.dart';
 import 'package:hackit_2025/views/pages/Tasks/task_display_page.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
@@ -62,10 +63,11 @@ class _TimeBlockWidgetState extends State<TimeBlockWidget> {
   Widget build(BuildContext context) {
     print(installedApps);
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InputWidget(title: "Title", controller: titleController),
         SizedBox(height: 50),
-        Text("Screentime Limit"),
+        Text("Screentime Limit", style: KTextStyle.header3Text),
         FilledButton(
           onPressed: () {
             showDialog(
@@ -114,10 +116,10 @@ class _TimeBlockWidgetState extends State<TimeBlockWidget> {
           child: Text("Select Time"),
         ),
         selectedDuration == null
-            ? Text("Set time limit for apps!")
+            ? Text("Selected time limit: Not selected")
             : Text("Selected time limit: $hours h $minutes min"),
         SizedBox(height: 40),
-        Text("Select apps to limit"),
+        Text("Select apps to limit", style: KTextStyle.header3Text),
         FilledButton(
           onPressed: () {
             showDialog(
@@ -193,6 +195,7 @@ class _TimeBlockWidgetState extends State<TimeBlockWidget> {
           },
           child: Text("Select apps.."),
         ),
+        SizedBox(height: 200),
         FilledButton(
           onPressed: () {
             if (selectedDuration == null ||
@@ -215,6 +218,7 @@ class _TimeBlockWidgetState extends State<TimeBlockWidget> {
                 "enabled" : true
               });
               print("hello");
+              print(localTimeBlockBox.get(titleController.text));
               service.invoke("updateTimeBlockServiceIsolate", {
                 "title": titleController.text,
                 "boxItem" : localTimeBlockBox.get(titleController.text)
@@ -223,6 +227,7 @@ class _TimeBlockWidgetState extends State<TimeBlockWidget> {
               timeBlockLengthNotifier.value = localTimeBlockBox.length;
             }
           },
+          
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [Icon(Icons.check), Text("Save")],

@@ -32,7 +32,7 @@ Future<void> initializeService() async {
     iosConfiguration: IosConfiguration(),
     androidConfiguration: AndroidConfiguration(
       onStart: onStart, // Evth u want your eyeService to do, defined here
-      isForegroundMode: false,
+      isForegroundMode: true,
       autoStart: true, // Isit fg or bg eyeService
     ),
   );
@@ -61,6 +61,8 @@ void onStart(ServiceInstance eyeService) async {
   var scheduleBox = await Hive.openBox("scheduleBox");
   var timeBlockBox = await Hive.openBox("timeBlockBox");
   timeBlockBox.clear();
+
+  bool overlayShown = false;
 
   if (eyeService is AndroidServiceInstance) {
     // if android, setup like this for android
@@ -97,6 +99,12 @@ void onStart(ServiceInstance eyeService) async {
     }
   });
 
+  eyeService.on("overlayShown").listen((event) {
+    if (event != null) {
+      overlayShown = event['bool'];
+    }
+  });
+
   if (eyeTimer?.isActive ?? false) {
     print("Timer already running, skipping...");
     return;
@@ -105,19 +113,17 @@ void onStart(ServiceInstance eyeService) async {
   //Whatever you invoke will cause the eyeService to start, stop etc. using those keys 'set as bg, fg etc'
   // This timer function specifically has to repeat every second to listen accordingly
   Map<String, UsageInfo>? previousUsageSession;
+  Map<String, Map<String, UsageInfo>> previousUsageSessionsPerBlock = {};
   eyeTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
     if (eyeService is AndroidServiceInstance) {
       if (await eyeService.isForegroundService()) {
         eyeService.setForegroundNotificationInfo(
-          title: "Service",
-          content: "Updated at ${DateTime.now()}",
+          title: "LockedIn",
+          content: "LockedIn is running in the background to help manage your screentime!",
         );
-      } else {
         if (appBlockNotifier.value) {
           // If AppBlock is enabled (default enabled)
           print("AppBlock service begins");
-          List<dynamic> monitoredApplicationSet = [];
-
           if (timeBlockBox.isNotEmpty) {
             print("TimeBlockBox is not empty");
 
@@ -129,11 +135,8 @@ void onStart(ServiceInstance eyeService) async {
               }
 
               // Loop to display overlay for scheduled-timers.
-              monitoredApplicationSet = _setMonitoringApplicationsSet(
-                // Updating monitoredapplicationset list, to store only selected apps first to filter usagedata further
-                timeBlockItem,
-                monitoredApplicationSet,
-              );
+              
+              List<dynamic> monitoredApplicationSet = List.from(timeBlockItem['packageName']);
               print(monitoredApplicationSet);
 
               Map<String, UsageInfo> currentUsageSession =
@@ -147,12 +150,12 @@ void onStart(ServiceInstance eyeService) async {
               );
               // Gets usage stats of all apps, removing the ones not inside filtered package names.
 
-              if (previousUsageSession != null) {
+              if (previousUsageSessionsPerBlock[timeBlockItem['title']] != null) {
                 print("test3");
                 String? appOpened = checkIfAnyAppHasBeenOpened(
                   // Function comparing foreground times between current vs previous, but idk if current and previous is defined too close that it is inaccurate.
                   currentUsageSession,
-                  previousUsageSession!,
+                  previousUsageSessionsPerBlock[timeBlockItem['title']]!,
                   monitoredApplicationSet,
                 );
                 appOpened != null ? print(appOpened) : print("hi");
@@ -163,8 +166,9 @@ void onStart(ServiceInstance eyeService) async {
                     await checkTimeLimit(
                       appOpened,
                       timeBlockItem['timeLimit'],
-                    )) {
+                    ) && overlayShown == false)  {
                   AlertDialogService.createAlertDialog();
+                  overlayShown = true;
                   print("showing overlay");
                   print(
                     previousUsageSession![monitoredApplicationSet[0]]!
@@ -177,7 +181,7 @@ void onStart(ServiceInstance eyeService) async {
                 }
               }
 
-              previousUsageSession = currentUsageSession;
+              previousUsageSessionsPerBlock[timeBlockItem['title']] = currentUsageSession;
             }
           }
         }
@@ -219,7 +223,7 @@ void onStart(ServiceInstance eyeService) async {
             }
           }
         }
-      }
+      } else {}
     }
   });
 }

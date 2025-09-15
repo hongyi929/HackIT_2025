@@ -78,6 +78,9 @@ class WorkSessionResultsPage extends StatelessWidget {
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: completedStream,
               builder: (ctx, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
                 final docs = snap.data?.docs ?? [];
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,6 +208,10 @@ class _CompletedTaskTile extends StatelessWidget {
           .doc(catId)
           .snapshots(),
       builder: (context, catSnap) {
+        if (catSnap.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
         final catName = catSnap.data?.data()?['categoryName'];
         final catColor = catSnap.data?.data()?['categoryColor'];
         return TaskWidget(

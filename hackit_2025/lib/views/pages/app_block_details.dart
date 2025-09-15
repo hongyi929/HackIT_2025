@@ -33,8 +33,8 @@ class _AppBlockDetailsState extends State<AppBlockDetails> {
     var boxItem = timeBlockBox.get(widget.keyApp);
     var filteredApps = obtainFilteredAppList(boxItem);
     int timeLimit = boxItem['timeLimit'];
-    int hours = timeLimit ~/ 60;
-    int minutes = (timeLimit - hours* 60) % 60;
+    int hours = timeLimit ~/ 3600;
+    int minutes = timeLimit~/60 - hours* 60;
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -44,28 +44,27 @@ class _AppBlockDetailsState extends State<AppBlockDetails> {
             Text(boxItem['title'], style: KTextStyle.header1Text),
             Text("Time Limit: $hours hours, $minutes minutes"),
             Text("Apps blocked:"),
-            Expanded(
-              child: ListView.builder(
-                itemCount: boxItem['apps'].length,
-                itemBuilder: (context, index) {
-                  var appName = boxItem['apps'][index];
-                  return FutureBuilder(
-                    future: obtainFilteredAppList(boxItem),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
-                      else {
-                        return ListTile(
-                          leading: Image.memory(snapshot.data![index].icon!),
-                          title: Text(snapshot.data![index].name),
-                        );
-              
-                      }
-                    },
+            FutureBuilder(
+              future: obtainFilteredAppList(boxItem),
+              builder: (context, asyncSnapshot) {
+                if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
+                }
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: boxItem['apps'].length,
+                    itemBuilder: (context, index) {
+                      var appName = boxItem['apps'][index];
+                      return ListTile(
+                              leading: Image.memory(asyncSnapshot.data![index].icon!),
+                              title: Text(asyncSnapshot.data![index].name),
+                            );
+                    },
+                  ),
+                );
+              }
             ),
           ],
         ),
