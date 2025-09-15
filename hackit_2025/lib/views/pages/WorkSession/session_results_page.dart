@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/services/user_stats_service.dart';
 import 'package:hackit_2025/services/work_session_service.dart';
 import 'package:hackit_2025/views/widgets/task_widget.dart';
 
@@ -125,12 +126,35 @@ class WorkSessionResultsPage extends StatelessWidget {
           height: 52,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: cs.primary,
+              backgroundColor: Color(0XFF1B69E0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
             onPressed: () async {
+              final uid = FirebaseAuth.instance.currentUser!.uid;
+              final q = await FirebaseFirestore.instance
+                  .collection('tasks')
+                  .where('user', isEqualTo: uid)
+                  .where('completed', isEqualTo: false)
+                  .where('semicomplete', isEqualTo: true)
+                  .get();
+
+              // Convert & count
+              final batch = FirebaseFirestore.instance.batch();
+              for (final d in q.docs) {
+                batch.update(d.reference, {
+                  'completed': true,
+                  'semicomplete': false,
+                });
+              }
+              await batch.commit();
+
+              // Award XP: 5 per task completed in this session
+              if (q.docs.isNotEmpty) {
+                await UserStatsService.I.incrementXp(5 * q.docs.length);
+              }
+
               // finalize tasks & clear flags, then go home
               await WorkSessionService.I.applyResultsAndClearFlags();
               if (context.mounted) {

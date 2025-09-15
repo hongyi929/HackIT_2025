@@ -61,6 +61,7 @@ void onStart(ServiceInstance eyeService) async {
   var scheduleBox = await Hive.openBox("scheduleBox");
   var timeBlockBox = await Hive.openBox("timeBlockBox");
   timeBlockBox.clear();
+
   bool overlayShown = false;
 
   if (eyeService is AndroidServiceInstance) {
