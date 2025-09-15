@@ -44,109 +44,115 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     );
 
     return Scaffold(
+      backgroundColor: Color(0xFFF3FAFF),
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: Form(
-            key: categoryKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Category Creator", style: KTextStyle.header1Text),
-                SizedBox(height: 20),
-                InputWidget(
-                  title: "Category Name",
-                  controller: categoryController,
-                ),
-                SizedBox(height: 20),
-                Text("Color"),
-                SizedBox(height: 10),
-                SizedBox(
-                  height: 300,
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 20,
-                      childAspectRatio: 1.35,
-                    ),
-                    itemCount: colorList.length,
-                    itemBuilder: (context, index) {
-                      Color boxColor = Color(colorList[index]);
-                      if (index < 11) {
-                        return GestureDetector(
-                          child: ColorButtonWidget(
-                            color: boxColor,
-                            selected: selectedIndex == index,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                              createdColor = colorList[index];
-                            });
-                          },
-                        );
-                      } else {
-                        return GestureDetector(
-                          child: ColorPaletteWidget(
-                            color: colorPicker,
-                            selected: selectedIndex == index,
-                          ),
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return SizedBox(
-                                  height: 300,
-                                  child: AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ColorPicker(
-                                          pickerColor: colorPicker,
-                                          onColorChanged: (value) {
-                                            setState(() {
-                                              colorPicker = value;
-                                              selectedIndex = index;
-                                              createdColor = value.toARGB32();
-                                            });
-                                          },
-                                        ),
-                                        FilledButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("Select color"),
-                                        ),
-                                      ],
+      body: Container(
+        decoration: BoxDecoration(
+          color: Color(0XFFF3FAFF)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: Form(
+              key: categoryKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Category Creator", style: KTextStyle.header1Text),
+                  SizedBox(height: 20),
+                  InputWidget(
+                    title: "Category Name",
+                    controller: categoryController,
+                  ),
+                  SizedBox(height: 20),
+                  Text("Color"),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 300,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 20,
+                        childAspectRatio: 1.35,
+                      ),
+                      itemCount: colorList.length,
+                      itemBuilder: (context, index) {
+                        Color boxColor = Color(colorList[index]);
+                        if (index < 11) {
+                          return GestureDetector(
+                            child: ColorButtonWidget(
+                              color: boxColor,
+                              selected: selectedIndex == index,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                                createdColor = colorList[index];
+                              });
+                            },
+                          );
+                        } else {
+                          return GestureDetector(
+                            child: ColorPaletteWidget(
+                              color: colorPicker,
+                              selected: selectedIndex == index,
+                            ),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return SizedBox(
+                                    height: 300,
+                                    child: AlertDialog(
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ColorPicker(
+                                            pickerColor: colorPicker,
+                                            onColorChanged: (value) {
+                                              setState(() {
+                                                colorPicker = value;
+                                                selectedIndex = index;
+                                                createdColor = value.toARGB32();
+                                              });
+                                            },
+                                          ),
+                                          FilledButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Select color"),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      if (categoryKey.currentState!.validate()) {
+                        categoryCollection.doc(FirebaseAuth.instance.currentUser!.uid + categoryController.text).set({
+                          "categoryName": categoryController.text,
+                          "categoryColor": createdColor,
+                          "user": FirebaseAuth.instance.currentUser!.uid,
+                        });
+        
+                        Navigator.pop(context);
                       }
                     },
+                    child: Text("Create category"),
                   ),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (categoryKey.currentState!.validate()) {
-                      categoryCollection.doc(FirebaseAuth.instance.currentUser!.uid + categoryController.text).set({
-                        "categoryName": categoryController.text,
-                        "categoryColor": createdColor,
-                        "user": FirebaseAuth.instance.currentUser!.uid,
-                      });
-
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text("Create category"),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

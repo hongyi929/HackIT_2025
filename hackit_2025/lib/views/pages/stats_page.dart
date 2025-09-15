@@ -111,150 +111,159 @@ class _StatsPageState extends State<StatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<AppUsageRow>>(
-        future: _future,
-        builder: (context, snap) {
-          final rows = snap.data ?? [];
-          final total = totalUsage(rows);
-          // debugPrint(
-          //   'FB state=${snap.connectionState} rows=${rows.length}',
-          // ); // DEBUGGING
-
-          return RefreshIndicator(
-            onRefresh: _refresh,
-            child: ListView(
-              padding: const EdgeInsets.all(20.0),
-              children: [
-                Text(
-                  'Insights',
-                  style: KTextStyle.titleText.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFC0E6FF), Color(0xFFF5FBFF)],
+            begin: Alignment.topCenter,
+            end: Alignment(0, 0.7),
+          ),
+        ),
+        child: FutureBuilder<List<AppUsageRow>>(
+          future: _future,
+          builder: (context, snap) {
+            final rows = snap.data ?? [];
+            final total = totalUsage(rows);
+            // debugPrint(
+            //   'FB state=${snap.connectionState} rows=${rows.length}',
+            // ); // DEBUGGING
+        
+            return RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView(
+                padding: const EdgeInsets.all(20.0),
+                children: [
+                  Text(
+                    'Insights',
+                    style: KTextStyle.titleText.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                SizedBox(height: 10.0),
-                // Segmented filter
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _Chip(
-                      'Today',
-                      _selectedRange == null && _range == TimeRange.today,
-                      () => _setRange(TimeRange.today),
-                    ),
-                    _Chip(
-                      'This week',
-                      _selectedRange == null && _range == TimeRange.week,
-                      () => _setRange(TimeRange.week),
-                    ),
-                    _Chip(
-                      'This month',
-                      _selectedRange == null && _range == TimeRange.month,
-                      () => _setRange(TimeRange.month),
-                    ),
-
-                    // When NO range is selected -> show an OUTLINED button
-                    if (_selectedRange == null)
-                      OutlinedButton.icon(
-                        onPressed: _pickDate,
-                        icon: const Icon(Icons.calendar_today, size: 18),
-                        label: const Text('Pick date'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ),
-
-                    // When a range IS selected -> show a filled-looking chip with an ×
-                    if (_selectedRange != null)
-                      Builder(
-                        builder: (context) {
-                          final cs = Theme.of(context).colorScheme;
-                          return InputChip(
-                            selected: true,
-                            showCheckmark: false,
-                            avatar: const Icon(Icons.event, size: 16),
-                            label: Text(
-                              'Selected: ${_fmtRange(_selectedRange!)}',
-                            ),
-                            onDeleted: _clearCustomRange,
-                            deleteIcon: const Icon(Icons.close),
-                            // make it look “filled” like a selected chip
-                            selectedColor: cs
-                                .primaryContainer, // M3: ok (you’re ignoring deprecations)
-                            labelStyle: TextStyle(
-                              color: cs.onPrimaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-
-                //const SizedBox(height: 24),
-
-                // show a pie chart of top apps for the current range
-                if (rows.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  _UsagePie(rows: rows),
-                  const SizedBox(height: 16),
-                ],
-
-                // Big number
-                Center(
-                  child: Column(
+                  SizedBox(height: 10.0),
+                  // Segmented filter
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
-                      Text(
-                        formatDuration(total),
-                        style: KTextStyle.interText.copyWith(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      _Chip(
+                        'Today',
+                        _selectedRange == null && _range == TimeRange.today,
+                        () => _setRange(TimeRange.today),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Screen Time',
-                        style: KTextStyle.header3Text.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      _Chip(
+                        'This week',
+                        _selectedRange == null && _range == TimeRange.week,
+                        () => _setRange(TimeRange.week),
                       ),
+                      _Chip(
+                        'This month',
+                        _selectedRange == null && _range == TimeRange.month,
+                        () => _setRange(TimeRange.month),
+                      ),
+        
+                      // When NO range is selected -> show an OUTLINED button
+                      if (_selectedRange == null)
+                        OutlinedButton.icon(
+                          onPressed: _pickDate,
+                          icon: const Icon(Icons.calendar_today, size: 18),
+                          label: const Text('Pick date'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+        
+                      // When a range IS selected -> show a filled-looking chip with an ×
+                      if (_selectedRange != null)
+                        Builder(
+                          builder: (context) {
+                            final cs = Theme.of(context).colorScheme;
+                            return InputChip(
+                              selected: true,
+                              showCheckmark: false,
+                              avatar: const Icon(Icons.event, size: 16),
+                              label: Text(
+                                'Selected: ${_fmtRange(_selectedRange!)}',
+                              ),
+                              onDeleted: _clearCustomRange,
+                              deleteIcon: const Icon(Icons.close),
+                              // make it look “filled” like a selected chip
+                              selectedColor: cs
+                                  .primaryContainer, // M3: ok (you’re ignoring deprecations)
+                              labelStyle: TextStyle(
+                                color: cs.onPrimaryContainer,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          },
+                        ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 32),
-
-                Text(
-                  'Most used apps',
-                  style: KTextStyle.header1Text.copyWith(),
-                ),
-                const SizedBox(height: 12),
-
-                if (snap.connectionState == ConnectionState.waiting)
-                  const Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (rows.isEmpty)
-                  const Center(
+        
+                  //const SizedBox(height: 24),
+        
+                  // show a pie chart of top apps for the current range
+                  if (rows.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _UsagePie(rows: rows),
+                    const SizedBox(height: 16),
+                  ],
+        
+                  // Big number
+                  Center(
                     child: Column(
                       children: [
                         Text(
-                          'No data yet. Make sure “Usage Access” is enabled in Settings.',
+                          formatDuration(total),
+                          style: KTextStyle.interText.copyWith(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Screen Time',
+                          style: KTextStyle.header3Text.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
-                  )
-                else
-                  // ⬇️ No .toList() needed; map() already returns an Iterable
-                  ...rows.map((r) => _AppRow(row: r, total: total)),
-              ],
-            ),
-          );
-        },
+                  ),
+                  const SizedBox(height: 32),
+        
+                  Text(
+                    'Most used apps',
+                    style: KTextStyle.header1Text.copyWith(),
+                  ),
+                  const SizedBox(height: 12),
+        
+                  if (snap.connectionState == ConnectionState.waiting)
+                    const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (rows.isEmpty)
+                    const Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'No data yet. Make sure “Usage Access” is enabled in Settings.',
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    // ⬇️ No .toList() needed; map() already returns an Iterable
+                    ...rows.map((r) => _AppRow(row: r, total: total)),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

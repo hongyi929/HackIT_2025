@@ -17,40 +17,24 @@ class _AddAppBlockerState extends State<AddAppBlocker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Text("Add App Blocker", style: KTextStyle.header1Text),
-            SizedBox(
-              height: 100,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // center the 2 items
-                  children: List.generate(2, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                      ), // spacing
-                      child: ChoiceChip(
-                        selected: selectedIndex == index,
-                        label: Text(
-                          index == 0 ? "Time Blocker" : "Other Blocker",
-                        ),
-                        onSelected: (value) {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                      ),
-                    );
-                  }),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Color(0XFFF3FAFF)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Text("Add App Blocker", style: KTextStyle.header1Text),
+              SizedBox(
+                height: 30,
+                child: Center(
+                  
                 ),
               ),
-            ),
-            TimeBlockWidget(titleController: timeBlockTitleController)
-          ],
+              TimeBlockWidget(titleController: timeBlockTitleController)
+            ],
+          ),
         ),
       ),
     );

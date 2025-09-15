@@ -24,6 +24,7 @@ void main() async {
   await initializeService();
   var scheduleBox = await Hive.openBox("localScheduleBox");
   var timeBlockBox = await Hive.openBox("localTimeBlockBox");
+  timeBlockBox.clear();
   
   timeBlockLengthNotifier.value = timeBlockBox.length;
   print(timeBlockBox.length);

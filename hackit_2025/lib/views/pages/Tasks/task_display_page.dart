@@ -6,6 +6,7 @@ import 'package:hackit_2025/views/widgets/date_input_widget.dart';
 import 'package:hackit_2025/views/widgets/input_widget.dart';
 import 'package:hackit_2025/views/widgets/task_edit_widget.dart';
 import 'package:intl/intl.dart';
+
 // Need to change this to a stream listener, so after edit it updates!
 // Or faster would be to pushReplace in display, and pushReplace back after add
 // To reduce codetime.
@@ -59,10 +60,10 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
     categoryNameController.text = widget.categoryName;
 
     return Scaffold(
+      backgroundColor: Color(0XFFF3FAFF),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors
-            .white, // Change to set color. Was done to debug scroll color.
+        backgroundColor: Color(0XFFF3FAFF),
         leading: null,
         title: Text("Task Editor"),
         scrolledUnderElevation: 0.0,
@@ -95,8 +96,16 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
           child: SingleChildScrollView(
             child: SizedBox(
               child: Container(
-                height: MediaQuery.of(context).size.height,
+                height: 420,
                 decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5), // Shadow color
+                      spreadRadius: 5, // How much the shadow spreads
+                      blurRadius: 7, // How blurred the shadow is
+                      offset: const Offset(0, 1), // Offset of the shadow (x, y)
+                    ),
+                  ],
                   borderRadius: BorderRadius.circular(15),
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
@@ -108,66 +117,48 @@ class _TaskDisplayPageState extends State<TaskDisplayPage> {
 
                 child: Form(
                   key: formKey,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 50),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                        child: TaskEditWidget(
-                          title: "Title",
-                          controller: titleController,
-                          style: KTextStyle.header1Text,
-                          initialValue: widget.title,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 40.0,
-                        ),
-                        child: TaskEditWidget(
-                          title: "description",
-                          controller: descriptionController,
-                          style: KTextStyle.header1Text,
-                          initialValue: widget.description,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 40,
-                        ),
-                        child: DateInputWidget(
-                          title: "Due date",
-                          controller: dateController,
-                          onChanged: (value) {
-                            newDate = value;
-                          },
-                        ),
-                      ),
-
-                      Text(widget.categoryName),
-
-                      SizedBox(),
-                      FilledButton(
-                        onPressed: () async {
-                          if (formKey.currentState!.validate()) {
-                            await updateTask(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 50),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
                               titleController.text,
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
                               descriptionController.text,
-                              newDate,
-                            );
-                            Navigator.pop(context);
-                            print("hi");
-                          }
-                          ;
-                        },
-                        child: Text("Save"),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+
+                          SizedBox(height: 50),
+
+                          SizedBox(height: 10),
+                          Text("Due date", style: KTextStyle.header2Text),
+                          Text(dateController.text),
+                          SizedBox(height: 50),
+
+                          Text("Category", style: KTextStyle.header2Text),
+                          Text(widget.categoryName),
+
+                          SizedBox(height: 50),
+                        ],
                       ),
-                      SizedBox(height: 100),
-                    ],
+                    ),
                   ),
                 ),
               ),

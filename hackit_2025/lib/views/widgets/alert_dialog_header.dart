@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hackit_2025/data/constants.dart';
 import 'package:hackit_2025/views/widgets/alert_dialog_service.dart';
 import 'package:hive/hive.dart';
@@ -26,6 +27,7 @@ List<String> activities = [
 
 Random random = Random();
 int randomInt = random.nextInt(14);
+final service = FlutterBackgroundService();
 
 class AlertDialogHeader extends StatelessWidget {
   @override
@@ -71,7 +73,7 @@ class AlertDialogHeader extends StatelessWidget {
         color: const Color.fromARGB(221, 158, 158, 158),
         borderRadius: BorderRadius.circular(15),
       ),
-      height: 150,
+      height: 180,
       width: 260,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -107,6 +109,9 @@ class AlertDialogHeader extends StatelessWidget {
       ),
         
       onPressed: () async {
+        service.invoke("overlayShown", {
+          "bool" : false
+        });
         await AlertDialogService.closeAlertDialog();
         final intent = AndroidIntent(
           action: 'android.intent.action.MAIN',

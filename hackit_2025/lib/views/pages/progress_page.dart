@@ -14,37 +14,46 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            Text('Progress', style: KTextStyle.titleText),
-            const SizedBox(height: 12),
-
-            // -- Metrics row
-            const SizedBox(height: 12),
-            Row(
-              children: const [
-                Expanded(
-                  child: _MetricCard(label: 'Tasks completed', value: '28'),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: _MetricCard(label: 'Time studied', value: '2h 45min'),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // Place your "Today / This week / Overall" filter chips here later
-            // … then the plant:
-            const PlantPanel(),
-
-            const SizedBox(height: 24),
-
-            // (Optional) your level bar, “tasks to next level”, etc…
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFC0E6FF), Color(0xFFF5FBFF)],
+            begin: Alignment.topCenter,
+            end: Alignment(0, 0.7),
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: [
+              Text('Progress', style: KTextStyle.titleText),
+              const SizedBox(height: 12),
+        
+              // -- Metrics row
+              const SizedBox(height: 12),
+              Row(
+                children: const [
+                  Expanded(
+                    child: _MetricCard(label: 'Tasks completed', value: '28'),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: _MetricCard(label: 'Time studied', value: '2h 45min'),
+                  ),
+                ],
+              ),
+        
+              const SizedBox(height: 12),
+        
+              // Place your "Today / This week / Overall" filter chips here later
+              // … then the plant:
+              const PlantPanel(),
+        
+              const SizedBox(height: 24),
+        
+              // (Optional) your level bar, “tasks to next level”, etc…
+            ],
+          ),
         ),
       ),
     );
