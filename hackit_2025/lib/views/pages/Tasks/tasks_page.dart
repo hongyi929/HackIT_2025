@@ -272,7 +272,7 @@ class _TasksPageState extends State<TasksPage> {
         },
         icon: Icon(Icons.add, color: Colors.white),
         label: Text("Add task", style: TextStyle(color: Colors.white)),
-        backgroundColor: cs.primary,
+        backgroundColor: Color(0XFF1B69E0),
       ),
     );
   }

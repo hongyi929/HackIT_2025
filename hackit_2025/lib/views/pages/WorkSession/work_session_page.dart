@@ -161,6 +161,9 @@ class _WorkSessionPageState extends State<WorkSessionPage>
                       });
                     }
                   },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Color(0XFF1B69E0),
+                  ),
                   icon: Icon(
                     _mode == SessionMode.working
                         ? Icons.pause_rounded
@@ -440,7 +443,7 @@ class _TimerCircle extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isWorking ? cs.primary : Colors.teal,
+                color: isWorking ? Color(0XFF1B69E0) : Colors.teal,
                 width: 10,
               ),
             ),

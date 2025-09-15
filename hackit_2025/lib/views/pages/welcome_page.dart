@@ -20,10 +20,7 @@ class WelcomePage extends StatelessWidget {
                 children: [
                   Stack(
                     alignment: Alignment.center,
-                    children: [
-                      Lottie.asset('assets/lotties/welcome.json'),
-                      Center(child: Text('L')),
-                    ],
+                    children: [Lottie.asset('assets/lotties/welcome.json')],
                   ),
                   Text('LockedIn', style: KTextStyle.homePageText),
                   SizedBox(height: 5),
@@ -42,6 +39,9 @@ class WelcomePage extends StatelessWidget {
                       width: double.infinity,
                       height: 50,
                       child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Color(0XFF1B69E0),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -52,9 +52,13 @@ class WelcomePage extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Text(
-                          'Lets Get Started',
-                          style: KTextStyle.header3Text,
+                        child: const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),

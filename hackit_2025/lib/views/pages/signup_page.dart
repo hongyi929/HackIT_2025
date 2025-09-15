@@ -34,6 +34,7 @@ Future<dynamic> createUserWithEmailAndPassword() async {
 class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(),
       body: Form(
@@ -43,36 +44,59 @@ class _SignupPageState extends State<SignupPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Sign Up", style: KTextStyle.header1Text),
+              Text("Sign Up", style: KTextStyle.titleText),
+              SizedBox(height: 40),
               InputWidget(title: "Email", controller: emailController),
+              SizedBox(height: 20),
               InputWidget(title: "Password", controller: passwordController),
-              FilledButton(
-                onPressed: () async {
-                  if (signupKey.currentState!.validate()) {
-                    bool signUpSuccess = await createUserWithEmailAndPassword();
-                    if (signUpSuccess == true) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return WidgetTree();
-                          },
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            errorMessage!,
-                            textAlign: TextAlign.center,
+              SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0XFF1B69E0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (signupKey.currentState!.validate()) {
+                      bool signUpSuccess =
+                          await createUserWithEmailAndPassword();
+                      if (signUpSuccess == true) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return WidgetTree();
+                            },
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              errorMessage!,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text("Sign Up"),
+                  },
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
+
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

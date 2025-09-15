@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -109,10 +111,18 @@ class PlantProgress {
 }
 
 class PlantService {
-  /// TODO: replace with your real source of truth (Firestore/local).
   Future<int> getCurrentXp() async {
-    // For now return a stable demo XP. Replace this with your data.
-    return 300;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ref = FirebaseFirestore.instance.collection('users').doc(uid);
+    final snap = await ref.get();
+
+    if (!snap.exists) {
+      // Create the user stats doc the first time we need it.
+      await ref.set({'xp': 0, 'studySecondsTotal': 0}, SetOptions(merge: true));
+      return 0;
+    }
+
+    return (snap.data()?['xp'] as int?) ?? 0;
   }
 
   Future<PlantProgress> load() async {

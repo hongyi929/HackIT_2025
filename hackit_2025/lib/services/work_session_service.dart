@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hackit_2025/services/user_stats_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Simple in-memory + SharedPrefs session state so the timers survive app
@@ -196,6 +197,7 @@ class WorkSessionService {
     if (_snap == null) return null;
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     final delta = nowMs - _snap!.lastModeStartMs;
+
     _snap = _snap!.mode == SessionMode.working
         ? WorkSessionSnapshot(
             title: _snap!.title,
@@ -215,7 +217,18 @@ class WorkSessionService {
             mode: _snap!.mode,
             lastModeStartMs: nowMs,
           );
+
     await _save();
+
+    // >>> ADD THIS: persist study time + award XP per full hour <<<
+    final workSecs = _snap!.workMs ~/ 1000;
+    await UserStatsService.I.incrementStudySeconds(workSecs);
+    final fullHours = workSecs ~/ 3600;
+    if (fullHours > 0) {
+      await UserStatsService.I.incrementXp(5 * fullHours);
+    }
+    // <<< END ADD >>>
+
     return _snap;
   }
 
@@ -235,6 +248,11 @@ class WorkSessionService {
         .where('semicomplete', isEqualTo: false)
         .get();
 
+    // Award +5 XP per task completed in this session
+    if (done.docs.isNotEmpty) {
+      await UserStatsService.I.incrementXp(5 * done.docs.length);
+    }
+
     // Two batches to avoid limits.
     final b1 = FirebaseFirestore.instance.batch();
     for (final d in done.docs) {
@@ -251,7 +269,6 @@ class WorkSessionService {
     }
     await b2.commit();
 
-    // Clear local session.
     _snap = null;
     await _save();
   }

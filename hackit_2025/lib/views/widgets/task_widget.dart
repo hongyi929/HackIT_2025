@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hackit_2025/data/constants.dart';
+import 'package:hackit_2025/services/user_stats_service.dart';
 import 'package:intl/intl.dart';
 
 class TaskWidget extends StatefulWidget {
@@ -61,6 +62,9 @@ class _TaskWidgetState extends State<TaskWidget> {
         .collection('tasks')
         .doc(widget.docid)
         .update({'completed': true});
+
+    // Award +5 XP per completed task
+    await UserStatsService.I.incrementXp(5);
   }
 
   @override
