@@ -52,94 +52,103 @@ class _UsagePageState extends State<UsagePage> {
     });
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text("Time Blockers", style: KTextStyle.titleText),
-              ),
-              localTimeBlockBox.isEmpty
-                  ? Text("Add a time blocker!")
-                  : Expanded(
-                      child: ValueListenableBuilder(
-                        valueListenable: timeBlockLengthNotifier,
-                        builder: (context, value, child) {
-                          return ListView.builder(
-                            itemCount: value,
-                            itemBuilder: (context, index) {
-                              print(localTimeBlockBox.length);
-                              // does it have keys?
-                              final key = localTimeBlockBox.keyAt(index);
-                              print(key);
-                              final data = localTimeBlockBox.get(key);
-                              return FutureBuilder<List<AppInfo>>(
-                                future: obtainFilteredAppList(data),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return ListTile(
-                                      title: Text("Loading apps..."),
-                                    );
-                                  }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFC0E6FF), Color(0xFFF5FBFF)],
+            begin: Alignment.topCenter,
+            end: Alignment(0, 0.7),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("Time Blockers", style: KTextStyle.titleText),
+                ),
+                localTimeBlockBox.isEmpty
+                    ? Text("Add a time blocker!")
+                    : Expanded(
+                        child: ValueListenableBuilder(
+                          valueListenable: timeBlockLengthNotifier,
+                          builder: (context, value, child) {
+                            return ListView.builder(
+                              itemCount: value,
+                              itemBuilder: (context, index) {
+                                print(localTimeBlockBox.length);
+                                // does it have keys?
+                                final key = localTimeBlockBox.keyAt(index);
+                                print(key);
+                                final data = localTimeBlockBox.get(key);
+                                return FutureBuilder<List<AppInfo>>(
+                                  future: obtainFilteredAppList(data),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return ListTile(
+                                        title: Text("Loading apps..."),
+                                      );
+                                    }
 
-                                  if (snapshot.hasError) {
-                                    return ListTile(
-                                      title: Text("Error loading apps"),
-                                    );
-                                  }
+                                    if (snapshot.hasError) {
+                                      return ListTile(
+                                        title: Text("Error loading apps"),
+                                      );
+                                    }
 
-                                  print(snapshot.data);
-                                  return GestureDetector(
-                                    child: ListTile(
-                                      leading: Image.memory(
-                                        snapshot.data![0].icon!,
-                                      ),
-                                      title: Text("${data['title']}"),
-                                      subtitle: Text(
-                                        "Number of apps: ${snapshot.data!.length}",
-                                      ),
-                                      trailing: Switch(
-                                        value: data['enabled'],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            data['enabled'] = value;
-                                            localTimeBlockBox.put(
-                                              key,
-                                              data,
-                                            ); // overwrite with updated map
-                                            service.invoke(
-                                              "updateTimeBlockServiceIsolate",
-                                              {
-                                                "title": data['title'],
-                                                "boxItem": data,
-                                              },
-                                            );
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return AppBlockDetails(
-                                              keyApp: key.toString(),
-                                            );
+                                    print(snapshot.data);
+                                    return GestureDetector(
+                                      child: ListTile(
+                                        leading: Image.memory(
+                                          snapshot.data![0].icon!,
+                                        ),
+                                        title: Text("${data['title']}"),
+                                        subtitle: Text(
+                                          "Number of apps: ${snapshot.data!.length}",
+                                        ),
+                                        trailing: Switch(
+                                          value: data['enabled'],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              data['enabled'] = value;
+                                              localTimeBlockBox.put(
+                                                key,
+                                                data,
+                                              ); // overwrite with updated map
+                                              service.invoke(
+                                                "updateTimeBlockServiceIsolate",
+                                                {
+                                                  "title": data['title'],
+                                                  "boxItem": data,
+                                                },
+                                              );
+                                            });
                                           },
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
+                                      ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return AppBlockDetails(
+                                                keyApp: key.toString(),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
               ],
             ),

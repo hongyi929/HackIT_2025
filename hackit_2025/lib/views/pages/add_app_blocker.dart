@@ -17,23 +17,18 @@ class _AddAppBlockerState extends State<AddAppBlocker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0XFFF3FAFF)
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Text("Add App Blocker", style: KTextStyle.header1Text),
-              SizedBox(
-                height: 30,
-                child: Center(
-                  
-                ),
-              ),
-              TimeBlockWidget(titleController: timeBlockTitleController)
-            ],
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(color: Color(0XFFF3FAFF)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Text("Add App Blocker", style: KTextStyle.header1Text),
+                SizedBox(height: 30, child: Center()),
+                TimeBlockWidget(titleController: timeBlockTitleController),
+              ],
+            ),
           ),
         ),
       ),

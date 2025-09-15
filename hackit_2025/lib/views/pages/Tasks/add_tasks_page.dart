@@ -69,41 +69,43 @@ class _AddTasksPageState extends State<AddTasksPage> {
           },
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: taskKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Add Task", style: KTextStyle.titleText),
-              SizedBox(height: 24),
-              InputWidget(title: "Task", controller: titleController),
-              SizedBox(height: 24),
-              InputWidget(
-                title: "Description",
-                controller: descriptionController,
-              ),
-              SizedBox(height: 24),
-              DateInputWidget(
-                title: "Enter due date",
-                controller: dateController,
-                onChanged: (value) {
-                  dateTimestamp = value;
-                },
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Form(
+            key: taskKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Add Task", style: KTextStyle.titleText),
+                SizedBox(height: 24),
+                InputWidget(title: "Task", controller: titleController),
+                SizedBox(height: 24),
+                InputWidget(
+                  title: "Description",
+                  controller: descriptionController,
+                ),
+                SizedBox(height: 24),
+                DateInputWidget(
+                  title: "Enter due date",
+                  controller: dateController,
+                  onChanged: (value) {
+                    dateTimestamp = value;
+                  },
+                ),
 
-              // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
-              // Acces category color and category name.
-              TaskDropdownWidget(
-                onChanged: (value) {
-                  selectedCategory = value;
-                },
-              ),
+                // For dropdown widget, Data will be passed through by selecting category, which will be used as a key to
+                // Acces category color and category name.
+                TaskDropdownWidget(
+                  onChanged: (value) {
+                    selectedCategory = value;
+                  },
+                ),
 
-              SizedBox(height: 64),
-            ],
+                SizedBox(height: 64),
+              ],
+            ),
           ),
         ),
       ),

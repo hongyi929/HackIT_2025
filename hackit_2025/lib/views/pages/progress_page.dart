@@ -22,54 +22,67 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            Text('Progress', style: KTextStyle.titleText),
-            const SizedBox(height: 12),
+      backgroundColor: Colors.blue,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFC0E6FF), Color(0xFFF5FBFF)],
+            begin: Alignment.topCenter,
+            end: Alignment(0, 0.7),
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: [
+              Text('Progress', style: KTextStyle.titleText),
+              const SizedBox(height: 12),
 
-            // -- Metrics row (live)
-            const SizedBox(height: 12),
-            FutureBuilder<_ProgressMetrics>(
-              future: _loadProgressMetrics(),
-              builder: (context, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Center(child: CircularProgressIndicator()),
+              // -- Metrics row (live)
+              const SizedBox(height: 12),
+              FutureBuilder<_ProgressMetrics>(
+                future: _loadProgressMetrics(),
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final data =
+                      snap.data ??
+                      const _ProgressMetrics(
+                        tasksDone: 0,
+                        study: Duration.zero,
+                      );
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _MetricCard(
+                          label: 'Tasks completed',
+                          value: '${data.tasksDone}',
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _MetricCard(
+                          label: 'Time studied',
+                          value: _fmtHM(data.study),
+                        ),
+                      ),
+                    ],
                   );
-                }
-                final data =
-                    snap.data ??
-                    const _ProgressMetrics(tasksDone: 0, study: Duration.zero);
-                return Row(
-                  children: [
-                    Expanded(
-                      child: _MetricCard(
-                        label: 'Tasks completed',
-                        value: '${data.tasksDone}',
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _MetricCard(
-                        label: 'Time studied',
-                        value: _fmtHM(data.study),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+                },
+              ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // Plant shows current XP/level/stage
-            const PlantPanel(),
+              // Plant shows current XP/level/stage
+              const PlantPanel(),
 
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
